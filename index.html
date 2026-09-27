@@ -104,7 +104,7 @@
           </div>
           <div>
             <h3 class="font-bold text-lg text-white" id="athkar-modal-title">قارئ الأذكار المأثورة</h3>
-            <p class="text-xs text-sky-400">انقر على العداد لاحتساب القراءة التفاعلية لكل ذكر</p>
+            <p class="text-xs text-sky-400">انقر على زر التسبيح لزيادة العداد تنازلياً أو تصاعدياً حتى إتمام العدد المطلوب</p>
           </div>
         </div>
         <button onclick="closeAthkarReaderModal()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition">
@@ -351,10 +351,23 @@
             </h3>
             <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300" id="timer-state-label">جاهز</span>
           </div>
-          <div class="text-center py-4">
+          <div class="text-center py-3">
             <div class="font-mono text-5xl font-black text-amber-400 tracking-wider" id="focus-timer-display">50:00</div>
           </div>
-          <div class="grid grid-cols-3 gap-2 mt-2">
+          <!-- Custom & Preset Time Controls -->
+          <div class="space-y-2 mb-3">
+            <div class="flex gap-1.5 justify-center flex-wrap">
+              <button onclick="setCustomTimerDuration(25)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-600 text-slate-300 hover:text-white text-[11px] font-mono">25 د</button>
+              <button onclick="setCustomTimerDuration(30)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-600 text-slate-300 hover:text-white text-[11px] font-mono">30 د</button>
+              <button onclick="setCustomTimerDuration(50)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-600 text-slate-300 hover:text-white text-[11px] font-mono">50 د</button>
+              <button onclick="setCustomTimerDuration(120)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-amber-600 text-slate-300 hover:text-white text-[11px] font-mono">120 د</button>
+            </div>
+            <div class="flex gap-1.5 items-center">
+              <input type="number" id="custom-minutes-input" min="1" max="300" placeholder="أدخل الدقائق..." class="flex-1 px-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-xs text-white placeholder-slate-500 font-mono text-center">
+              <button onclick="applyCustomMinutes()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 text-xs font-bold transition">تعيين</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
             <button onclick="startFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-400">بدء</button>
             <button onclick="pauseFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700">إيقاف</button>
             <button onclick="resetFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700">إعادة</button>
@@ -432,7 +445,7 @@
     let currentMonth = 8;
     let currentYear = 2026;
     let waterAmount = parseInt(localStorage.getItem('itmo_water') || '0', 10);
-    let focusTimeRemaining = 3000;
+    let focusTimeRemaining = 3000; // 50 mins default
     let focusTimerInterval = null;
     let isTimerRunning = false;
 
@@ -804,6 +817,23 @@
       document.getElementById('timer-state-label').textContent = 'جاهز';
     }
 
+    function setCustomTimerDuration(mins) {
+      pauseFocusTimer();
+      focusTimeRemaining = mins * 60;
+      updateTimerDisplay();
+      document.getElementById('timer-state-label').textContent = `جاهز (${mins}د)`;
+    }
+
+    function applyCustomMinutes() {
+      const input = document.getElementById('custom-minutes-input');
+      if (!input || !input.value) return;
+      const mins = parseInt(input.value, 10);
+      if (isNaN(mins) || mins <= 0) return;
+      setCustomTimerDuration(mins);
+      input.value = '';
+      showToast(`تم ضبط المؤقت على ${mins} دقيقة ✔`);
+    }
+
     function updateTimerDisplay() {
       const m = Math.floor(focusTimeRemaining / 60);
       const s = focusTimeRemaining % 60;
@@ -867,7 +897,7 @@
       input.value = '';
       localStorage.setItem('itmo_habits', JSON.stringify(userHabits));
       renderHabitsList();
-      showToast('تمت إضافة العادة الجديدة بنجاح ✔');
+      showToast('تمت إضافة العادة الجديدة وحفظها بنجاح ✔');
     }
 
     function resetTodayHabits() {
@@ -933,13 +963,13 @@
 
       let html = '';
       items.forEach((item, idx) => {
-        let currentClickCount = 0;
         html += `
-          <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2" id="athkar-card-${idx}">
+          <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2.5" id="athkar-card-${idx}">
             <div class="flex items-center justify-between text-xs text-sky-400 font-bold">
-              <span>الذكر رقم ${idx + 1}</span>
-              <button onclick="decrementAthkarCount(${idx}, ${item.count})" class="px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 font-mono text-xs hover:bg-sky-500/30 transition" id="athkar-btn-${idx}">
-                التكرار المتبقي: <span id="athkar-count-${idx}">${item.count}</span> / ${item.count}
+              <span>الذكر رقم ${idx + 1} (المطلوب: <span class="text-amber-300">${item.count}</span>)</span>
+              <button onclick="incrementAthkarCounter(${idx}, ${item.count})" class="px-3 py-1.5 rounded-xl bg-sky-500/20 text-sky-200 font-mono text-xs hover:bg-sky-500/30 transition flex items-center gap-2" id="athkar-btn-${idx}">
+                <span>العدّاد: <strong id="athkar-count-${idx}" class="text-sky-300 font-black text-sm">0</strong> / ${item.count}</span>
+                <i data-lucide="plus-circle" class="w-4 h-4 text-sky-400"></i>
               </button>
             </div>
             <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">${item.text}</p>
@@ -949,24 +979,30 @@
       listEl.innerHTML = html;
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
-    function decrementAthkarCount(idx, maxCount) {
-      const countEl = document.getElementById(`athkar-count-${idx}`);
-      const cardEl = document.getElementById(`athkar-card-${idx}`);
-      if (!countEl) return;
-      let current = parseInt(countEl.textContent, 10);
-      if (current > 0) {
-        current--;
-        countEl.textContent = current;
-        if (current === 0) {
-          cardEl.classList.add('border-emerald-500/60', 'bg-emerald-950/20');
-          countEl.innerHTML = '✔ تم';
+    let athkarProgressMap = {};
+    function incrementAthkarCounter(idx, targetCount) {
+      if (!athkarProgressMap[idx]) athkarProgressMap[idx] = 0;
+      if (athkarProgressMap[idx] < targetCount) {
+        athkarProgressMap[idx]++;
+        const countEl = document.getElementById(`athkar-count-${idx}`);
+        const cardEl = document.getElementById(`athkar-card-${idx}`);
+        const btnEl = document.getElementById(`athkar-btn-${idx}`);
+        if (countEl) countEl.textContent = athkarProgressMap[idx];
+        if (athkarProgressMap[idx] === targetCount) {
+          if (cardEl) cardEl.classList.add('border-emerald-500/60', 'bg-emerald-950/20');
+          if (btnEl) btnEl.className = 'px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-mono text-xs font-bold flex items-center gap-2';
         }
       }
     }
 
-    function closeAthkarReaderModal() { document.getElementById('athkar-reader-modal').classList.add('hidden'); }
+    function closeAthkarReaderModal() { 
+      athkarProgressMap = {};
+      document.getElementById('athkar-reader-modal').classList.add('hidden'); 
+    }
+    
     function completeCurrentAthkarFromModal() {
       showToast('تم تسجيل قراءة الأذكار بنجاح ✔');
       closeAthkarReaderModal();
