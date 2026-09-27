@@ -45,6 +45,7 @@
     </div>
   </div>
 
+  <!-- Post-Prayer Modal -->
   <div id="post-prayer-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[95] hidden items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-5 text-right">
       <div class="flex items-center justify-between border-b border-white/10 pb-4">
@@ -78,6 +79,7 @@
     </div>
   </div>
 
+  <!-- Athkar Reader Modal -->
   <div id="athkar-reader-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[96] hidden items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-sky-500/40 bg-slate-950 shadow-2xl space-y-5 text-right">
       <div class="flex items-center justify-between border-b border-white/10 pb-4">
@@ -109,6 +111,7 @@
     </div>
   </div>
 
+  <!-- Nutrition Modal -->
   <div id="nutrition-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[90] hidden items-center justify-center p-4">
     <div class="glass-card max-w-3xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-sky-500/30 bg-slate-950 shadow-2xl space-y-5 text-right">
       <div class="flex items-center justify-between border-b border-white/10 pb-4">
@@ -144,6 +147,7 @@
     </div>
   </div>
 
+  <!-- Full Prayer Table Modal -->
   <div id="prayer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-3 sm:p-6">
     <div class="glass-card w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col border border-white/10 shadow-2xl overflow-hidden bg-slate-900">
       <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
@@ -179,7 +183,7 @@
           </h1>
         </div>
         <p class="text-xs sm:text-sm text-slate-400 mt-1">
-          معسكر الـ 16 ساعة (يوم السبت) + الجدول الرسمي المعتمد لجامعة ITMO + مراسي الصلوات والأذكار التفاعلية
+          معسكر الـ 16 ساعة (يوم السبت) + الجدول الرسمي المعتمد لجامعة ITMO مع مسارات القاعات والمباني والخروج المبكر
         </p>
       </div>
 
@@ -193,12 +197,10 @@
         <button onclick="openPrayerModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/30 transition flex items-center gap-2">
           <i data-lucide="compass" class="w-4 h-4"></i> مواقيت الصلاة
         </button>
-        <button onclick="requestNotificationPermission()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 border border-sky-500/30 transition flex items-center gap-2">
-          <i data-lucide="bell" class="w-4 h-4"></i> تفعيل التنبيهات
-        </button>
       </div>
     </header>
 
+    <!-- Dhikr Banner -->
     <div class="glass-card rounded-2xl p-4 sm:p-5 border border-indigo-500/30 bg-gradient-to-r from-indigo-950/30 via-slate-900/60 to-purple-950/30 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <span class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300"><i data-lucide="heart" class="w-5 h-5 fill-current"></i></span>
@@ -212,6 +214,7 @@
       </button>
     </div>
 
+    <!-- Live Prayer Countdown Banner -->
     <div class="glass-card rounded-2xl p-4 sm:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/20 via-slate-900/60 to-sky-950/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div class="flex items-center gap-3.5">
         <div class="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 shrink-0"><i data-lucide="clock" class="w-6 h-6"></i></div>
@@ -231,7 +234,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- Timeline and Official University Schedule -->
+      <!-- Main Schedule Column -->
       <div class="lg:col-span-2 space-y-6">
         <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-5">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-white/10">
@@ -252,7 +255,7 @@
         </div>
       </div>
 
-      <!-- Monthly Calendar Sidebar & Tools -->
+      <!-- Sidebar Column (Monthly Calendar, Water, Focus, Habits) -->
       <div class="space-y-6">
         
         <!-- Monthly Calendar Widget -->
@@ -347,7 +350,7 @@
           </div>
           
           <div class="flex gap-2">
-            <input type="text" id="new-habit-input" placeholder="أضف عادة جديدة (مثل: فرش الأسنان قبل النوم)..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-xs text-white placeholder-slate-500">
+            <input type="text" id="new-habit-input" placeholder="أضف عادة جديدة (مثل: فرش الأسنان)..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-xs text-white placeholder-slate-500">
             <button onclick="addNewCustomHabit()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition flex items-center gap-1">
               <i data-lucide="plus" class="w-4 h-4"></i> إضافة
             </button>
@@ -368,7 +371,6 @@
       { day: 28, month: 8, fajr: "04:57", shuruq: "06:57", dhuhr: "13:20", asr: "15:47", maghrib: "18:44", isha: "20:26" },
       { day: 29, month: 8, fajr: "04:59", shuruq: "07:00", dhuhr: "13:20", asr: "15:45", maghrib: "18:40", isha: "20:25" },
       { day: 30, month: 8, fajr: "05:01", shuruq: "07:02", dhuhr: "13:20", asr: "15:43", maghrib: "18:38", isha: "20:24" },
-      // October placeholders
       { day: 1, month: 9, fajr: "05:04", shuruq: "07:05", dhuhr: "13:20", asr: "15:41", maghrib: "18:35", isha: "20:22" },
       { day: 2, month: 9, fajr: "05:07", shuruq: "07:08", dhuhr: "13:19", asr: "15:39", maghrib: "18:32", isha: "20:20" },
       { day: 3, month: 9, fajr: "05:09", shuruq: "07:10", dhuhr: "13:19", asr: "15:37", maghrib: "18:29", isha: "20:18" },
@@ -386,20 +388,18 @@
     let currentMonth = 8;
     let currentYear = 2026;
     let waterAmount = parseInt(localStorage.getItem('itmo_water') || '0', 10);
-    let focusTimeRemaining = 3000; // 50 mins default
+    let focusTimeRemaining = 3000;
     let focusTimerInterval = null;
     let isTimerRunning = false;
+    let cancelledLectures = JSON.parse(localStorage.getItem('itmo_cancelled_lectures') || '{}');
 
     // Week Parity Rule: Sept 28 - Oct 4 is Even (زوجي), Oct 5 - Oct 11 is Odd (فردي)
     function getWeekParity(dateObj) {
       const d = dateObj.getDate();
       const m = dateObj.getMonth();
-      // Sept 28 - Oct 4 (Even / زوجي)
       if ((m === 8 && d >= 28) || (m === 9 && d <= 4)) return 'even';
-      // Oct 5 - Oct 11 (Odd / فردي)
       if (m === 9 && d >= 5 && d <= 11) return 'odd';
       
-      // Default fallback based on week number since Sept 28
       const startEvenWeek = new Date(2026, 8, 28);
       const diffTime = Math.floor((dateObj - startEvenWeek) / (1000 * 60 * 60 * 24));
       const weekNum = Math.floor(diffTime / 7);
@@ -410,36 +410,39 @@
     const schedulesEven = {
       mon: [
         { id: 'me_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر وقراءة أذكار الصباح.' },
-        { id: 'me_2', time: '11:30 - 13:00', title: 'Дискретная математика — Лекция', type: 'study', desc: 'محاضرة رياضيات متقطعة (عن بُعد).' },
-        { id: 'me_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء.' },
-        { id: 'me_4', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
-        { id: 'me_5', time: '18:44 - 19:10', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'أداء المغرب وأذكار المساء.' },
-        { id: 'me_6', time: '20:26 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
+        { id: 'me_2', time: '10:45 - 11:15', title: 'التحرك المبكر لمؤتمر/محاضرة (مترو سانت بطرسبرغ 🚇)', type: 'travel', desc: 'الخروج قبل المحاضرة بـ 45 دقيقة للوصول في الموعد.' },
+        { id: 'me_3', time: '11:30 - 13:00', title: 'Дискретная математика — Лекция', type: 'study', desc: 'رياضيات متقطعة (عن بُعد).' },
+        { id: 'me_4', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء.' },
+        { id: 'me_5', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'me_6', time: '18:44 - 19:10', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'أداء المغرب وأذكار المساء.' },
+        { id: 'me_7', time: '20:26 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
       ],
       tue: [
         { id: 'te_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر والأذكار.' },
-        { id: 'te_2', time: '09:50 - 11:20', title: 'Математический анализ — Лекция', type: 'study', desc: 'Песочная наб., д. 14, قاعة 202.' },
-        { id: 'te_3', time: '13:19 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتغذية.' },
-        { id: 'te_4', time: '13:30 - 15:00', title: 'Математический анализ — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 306.' },
-        { id: 'te_5', time: '15:30 - 17:00', title: 'Информатика — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 311.' },
-        { id: 'te_6', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
-        { id: 'te_7', time: '18:40 - 19:05', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'te_8', time: '20:25 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
+        { id: 'te_2', time: '09:05 - 09:35', title: 'التحرك المبكر إلى المبنى الأول (Песочная наб., д. 14)', type: 'travel', desc: 'ركوب الحافلة/المترو مبكراً.' },
+        { id: 'te_3', time: '09:50 - 11:20', title: 'Математический анализ — Лекция', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 202.' },
+        { id: 'te_4', time: '13:19 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتغذية.' },
+        { id: 'te_5', time: '13:30 - 15:00', title: 'Математический анализ — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 306.' },
+        { id: 'te_6', time: '15:30 - 17:00', title: 'Информатика — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 311.' },
+        { id: 'te_7', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'te_8', time: '18:40 - 19:05', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'te_9', time: '20:25 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
       ],
       wed: [
         { id: 'wee_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر في جماعة.' },
-        { id: 'wee_2', time: '08:10 - 09:40', title: 'Введение в профессиональную деятельность — Лекция', type: 'study', desc: 'Песочная наб., д. 14, قاعة 202.' },
-        { id: 'wee_3', time: '09:50 - 11:20', title: 'Введение в профессиональную деятельность — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 202.' },
-        { id: 'wee_4', time: '13:19 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة الغداء.' },
-        { id: 'wee_5', time: '13:30 - 15:00', title: 'Философия — Лекция', type: 'study', desc: 'ул. Ломоносова, д. 9, قاعة 2202.' },
-        { id: 'wee_6', time: '15:30 - 17:00', title: 'Философия — Практика', type: 'study', desc: 'ул. Ломоносова, д. 9, قاعة 1607.' },
-        { id: 'wee_7', time: '15:43 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
-        { id: 'wee_8', time: '18:38 - 19:05', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'wee_9', time: '18:50 - 22:00', title: 'Русский язык (Академический) — Практика', type: 'study', desc: 'ул. Ломоносова.' },
-        { id: 'wee_10', time: '20:24 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
+        { id: 'wee_2', time: '07:25 - 07:55', title: 'التحرك المبكر إلى المبنى الأول (Песочная наб., д. 14)', type: 'travel', desc: 'الوصول مبكراً للمحاضرة الصباحية.' },
+        { id: 'wee_3', time: '08:10 - 09:40', title: 'Введение в профессиональную деятельность — Лекция', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 202.' },
+        { id: 'wee_4', time: '09:50 - 11:20', title: 'Введение в профессиональную деятельность — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 202.' },
+        { id: 'wee_5', time: '13:19 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة الغداء.' },
+        { id: 'wee_6', time: '13:30 - 15:00', title: 'Философия — Лекция', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова, д. 9, قاعة 2202.' },
+        { id: 'wee_7', time: '15:30 - 17:00', title: 'Философия — Практика', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова, д. 9, قاعة 1607.' },
+        { id: 'wee_8', time: '15:43 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'wee_9', time: '18:38 - 19:05', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'wee_10', time: '18:50 - 22:00', title: 'Русский язык (Академический) — Практика', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова.' },
+        { id: 'wee_11', time: '20:24 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
       ],
       thu: [
-        { id: 'the_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية اليوم (لا توجد محاضرات في هذا اليوم).' },
+        { id: 'the_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية اليوم (لا توجد محاضرات رسمية).' },
         { id: 'the_2', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'صلاة الظهر.' },
         { id: 'the_3', time: '15:47 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
         { id: 'the_4', time: '18:44 - 19:10', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
@@ -448,26 +451,29 @@
       ],
       fri: [
         { id: 'fre_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر في جماعة.' },
-        { id: 'fre_2', time: '08:10 - 09:40', title: 'Алгебра и алгоритмы — Лекция', type: 'study', desc: 'Песочная наб., д. 14, قاعة 206.' },
-        { id: 'fre_3', time: '11:30 - 13:00', title: 'Алгебра и алгоритмы — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 306.' },
-        { id: 'fre_4', time: '13:20 - 14:30', title: 'صلاة الجمعة المباركة والراحة الأسبوعية', type: 'prayer', desc: 'صلاة الجمعة وسورة الكهف.' },
-        { id: 'fre_5', time: '15:00 - 17:00', title: 'Русский язык (Разговорный) — Практика', type: 'study', desc: 'ممارسة اللغة الروسية المحادثة.' },
-        { id: 'fre_6', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
-        { id: 'fre_7', time: '18:32 - 19:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'fre_8', time: '20:30 - 22:00', title: 'Введение в профессиональную деятельность — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 306.' },
-        { id: 'fre_9', time: '20:20 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام اليوم.' }
+        { id: 'fre_2', time: '07:25 - 07:55', title: 'التحرك المبكر إلى المبنى الأول (Песочная наб., д. 14)', type: 'travel', desc: 'الخروج مبكراً.' },
+        { id: 'fre_3', time: '08:10 - 09:40', title: 'Алгебра и алгоритмы — Лекция', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 206.' },
+        { id: 'fre_4', time: '11:30 - 13:00', title: 'Алгебра и алгоритмы — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 306.' },
+        { id: 'fre_5', time: '13:20 - 14:30', title: 'صلاة الجمعة المباركة والراحة الأسبوعية', type: 'prayer', desc: 'صلاة الجمعة وسورة الكهف.' },
+        { id: 'fre_6', time: '15:00 - 17:00', title: 'Русский язык (Разговорный) — Практика', type: 'study', desc: 'ممارسة اللغة الروسية المحادثة.' },
+        { id: 'fre_7', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'fre_8', time: '18:32 - 19:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'fre_9', time: '20:15 - 20:45', title: 'التحرك المبكر إلى المبنى الأول للممارسة المسائية', type: 'travel', desc: 'التحرك للمحاضرة المسائية.' },
+        { id: 'fre_10', time: '20:30 - 22:00', title: 'Введение в профессиональную деятельность — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 306.' },
+        { id: 'fre_11', time: '20:20 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام اليوم.' }
       ],
       sat: [
         { id: 'sae_1', time: '05:00 - 05:30', title: 'الاستيقاظ المبكر وصلاة الفجر + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية معسكر الـ 16 ساعة المكثف.' },
         { id: 'sae_2', time: '05:30 - 09:30', title: 'الفترة الأولى (أ): 4 ساعات متراكم', type: 'camp', desc: 'مراجعة المنهج القديم والحل.' },
         { id: 'sae_3', time: '09:30 - 01:30', title: 'الفترة الأولى (ب): 4 ساعات جديد', type: 'camp', desc: 'مذاكرة الدروس الحالية.' },
-        { id: 'sae_4', time: '11:30 - 13:00', title: 'Информатика — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 303.' },
-        { id: 'sae_5', time: '01:30 - 03:30', title: 'صلاة الظهر + الغداء + قيلولة (راحة)', type: 'prayer', desc: 'صلاة الظهر واستعادة النشاط.' },
-        { id: 'sae_6', time: '03:30 - 07:30', title: 'الفترة الثانية (أ): 4 ساعات متراكم', type: 'camp', desc: 'البدء بالقديم للمادة الثانية.' },
-        { id: 'sae_7', time: '15:37 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
-        { id: 'sae_8', time: '07:30 - 11:30', title: 'الفترة الثانية (ب): 4 ساعات جديد', type: 'camp', desc: 'متابعة المنهج الجديد.' },
-        { id: 'sae_9', time: '18:29 - 19:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'sae_10', time: '20:18 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام معسكر الـ 16 ساعة.' }
+        { id: 'sae_4', time: '10:45 - 11:15', title: 'التحرك المبكر إلى المبنى الأول (Песочная наб., д. 14)', type: 'travel', desc: 'التحرك لمحاضرة المعلوماتية.' },
+        { id: 'sae_5', time: '11:30 - 13:00', title: 'Информатика — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 303.' },
+        { id: 'sae_6', time: '01:30 - 03:30', title: 'صلاة الظهر + الغداء + قيلولة (راحة)', type: 'prayer', desc: 'صلاة الظهر واستعادة النشاط.' },
+        { id: 'sae_7', time: '03:30 - 07:30', title: 'الفترة الثانية (أ): 4 ساعات متراكم', type: 'camp', desc: 'البدء بالقديم للمادة الثانية.' },
+        { id: 'sae_8', time: '15:37 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'sae_9', time: '07:30 - 11:30', title: 'الفترة الثانية (ب): 4 ساعات جديد', type: 'camp', desc: 'متابعة المنهج الجديد.' },
+        { id: 'sae_10', time: '18:29 - 19:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'sae_11', time: '20:18 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام معسكر الـ 16 ساعة.' }
       ],
       sun: [
         { id: 'sue_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية يوم العمل.' },
@@ -483,54 +489,62 @@
     const schedulesOdd = {
       mon: [
         { id: 'mo_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر وقراءة أذكار الصباح.' },
-        { id: 'mo_2', time: '11:30 - 13:00', title: 'Дискретная математика — Лекция', type: 'study', desc: 'محاضرة رياضيات متقطعة (عن بُعد).' },
-        { id: 'mo_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء.' },
-        { id: 'mo_4', time: '15:30 - 17:00', title: 'Дискретная математика — Практика', type: 'study', desc: 'ул. Ломоносова, д. 9, قاعة 1314.' },
-        { id: 'mo_5', time: '15:33 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
-        { id: 'mo_6', time: '17:10 - 18:40', title: 'Дискретная математика — Практика (تابع)', type: 'study', desc: 'ул. Ломоносова, д. 9, قاعة 1314.' },
-        { id: 'mo_7', time: '18:22 - 19:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'mo_8', time: '20:14 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
+        { id: 'mo_2', time: '10:45 - 11:15', title: 'التحرك المبكر للمحاضرة (عن بُعد / تدوين)', type: 'travel', desc: 'تجهيز مكان التركيز للمحاضرة.' },
+        { id: 'mo_3', time: '11:30 - 13:00', title: 'Дискретная математика — Лекция', type: 'study', desc: 'رياضيات متقطعة (عن بُعد).' },
+        { id: 'mo_4', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء.' },
+        { id: 'mo_5', time: '14:45 - 15:15', title: 'التحرك المبكر إلى المبنى الثاني (ул. Ломоносова, д. 9)', type: 'travel', desc: 'التحرك لمبنى لومونوسوف للقاعة 1314.' },
+        { id: 'mo_6', time: '15:30 - 17:00', title: 'Дискретная математика — Практика', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова, д. 9, قاعة 1314.' },
+        { id: 'mo_7', time: '15:33 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'mo_8', time: '17:10 - 18:40', title: 'Дискретная математика — Практика (تابع)', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова, д. 9, قاعة 1314.' },
+        { id: 'mo_9', time: '18:22 - 19:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'mo_10', time: '20:14 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
       ],
       tue: [
         { id: 'tu_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر والأذكار.' },
-        { id: 'tu_2', time: '09:50 - 11:20', title: 'Математический анализ — Лекция', type: 'study', desc: 'Песочная наб., д. 14, قاعة 202.' },
-        { id: 'tu_3', time: '13:19 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتغذية.' },
-        { id: 'tu_4', time: '13:30 - 15:00', title: 'Математический анализ — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 306.' },
-        { id: 'tu_5', time: '15:30 - 17:00', title: 'Программирование — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 306.' },
-        { id: 'tu_6', time: '15:31 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
-        { id: 'tu_7', time: '18:19 - 18:50', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'tu_8', time: '20:12 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
+        { id: 'tu_2', time: '09:05 - 09:35', title: 'التحرك المبكر إلى المبنى الأول (Песочная наб., д. 14)', type: 'travel', desc: 'التحرك مبكراً.' },
+        { id: 'tu_3', time: '09:50 - 11:20', title: 'Математический анализ — Лекция', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 202.' },
+        { id: 'tu_4', time: '13:19 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتغذية.' },
+        { id: 'tu_5', time: '13:30 - 15:00', title: 'Математический анализ — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 306.' },
+        { id: 'tu_6', time: '15:30 - 17:00', title: 'Программирование — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 306.' },
+        { id: 'tu_7', time: '15:31 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'tu_8', time: '18:19 - 18:50', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'tu_9', time: '20:12 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
       ],
       wed: [
         { id: 'we_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر في جماعة.' },
         { id: 'we_2', time: '13:19 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة الغداء.' },
-        { id: 'we_3', time: '13:30 - 15:00', title: 'Программирование — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 202.' },
-        { id: 'we_4', time: '15:30 - 17:00', title: 'Программирование — Практика (تابع)', type: 'study', desc: 'Песочная наб., д. 14, قاعة 202.' },
-        { id: 'we_5', time: '15:29 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
-        { id: 'we_6', time: '18:16 - 18:50', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'we_7', time: '18:50 - 22:00', title: 'Русский язык (Академический) — Практика', type: 'study', desc: 'ул. Ломоносова.' },
-        { id: 'we_8', time: '20:10 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
+        { id: 'we_3', time: '13:00 - 13:30', title: 'التحرك المبكر إلى المبنى الأول (Песочная наб., д. 14)', type: 'travel', desc: 'التحرك لمختبر البرمجة.' },
+        { id: 'we_4', time: '13:30 - 15:00', title: 'Программирование — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 202.' },
+        { id: 'we_5', time: '15:30 - 17:00', title: 'Программирование — Практика (تابع)', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 202.' },
+        { id: 'we_6', time: '15:29 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'we_7', time: '18:16 - 18:50', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'we_8', time: '18:15 - 18:45', title: 'التحرك المبكر إلى المبنى الثاني (ул. Ломоносова)', type: 'travel', desc: 'التحرك لمحاضرة اللغة الروسية.' },
+        { id: 'we_9', time: '18:50 - 22:00', title: 'Русский язык (Академический) — Практика', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова.' },
+        { id: 'we_10', time: '20:10 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
       ],
       thu: [
         { id: 'th_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية اليوم.' },
         { id: 'th_2', time: '13:18 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'صلاة الظهر.' },
-        { id: 'th_3', time: '15:30 - 17:00', title: 'Реформы и реформаторы в истории России — Практика', type: 'study', desc: 'Кронверкский пр., قاعة 1405.' },
-        { id: 'th_4', time: '15:27 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
-        { id: 'th_5', time: '18:13 - 18:50', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'th_6', time: '18:50 - 20:20', title: 'Реформы и реформаторы в истории России — Лекция', type: 'study', desc: 'Кронверкский пр., قاعة 1316.' },
-        { id: 'th_7', time: '20:30 - 21:30', title: 'طبخ مجمّع (Batch Cooking) للوجبات 🍲', type: 'work', desc: 'تجهيز الوجبات.' },
-        { id: 'th_8', time: '20:08 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
+        { id: 'th_3', time: '14:45 - 15:15', title: 'التحرك المبكر إلى المبنى الرئيسي (Кронверкский пр.)', type: 'travel', desc: 'التحرك لمادة تاريخ الإصلاحات.' },
+        { id: 'th_4', time: '15:30 - 17:00', title: 'Реформы и реформаторы в истории России — Практика', type: 'study', desc: 'المبنى الرئيسي: Кронверкский пр., قاعة 1405.' },
+        { id: 'th_5', time: '15:27 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'th_6', time: '18:13 - 18:50', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'th_7', time: '18:50 - 20:20', title: 'Реформы и реформаторы в истории России — Лекция', type: 'study', desc: 'المبنى الرئيسي: Кронверкский пр., قاعة 1316.' },
+        { id: 'th_8', time: '20:30 - 21:30', title: 'طبخ مجمّع (Batch Cooking) للوجبات 🍲', type: 'work', desc: 'تجهيز الوجبات.' },
+        { id: 'th_9', time: '20:08 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
       ],
       fri: [
         { id: 'fr_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر في جماعة.' },
-        { id: 'fr_2', time: '08:10 - 09:40', title: 'Алгебра и алгоритмы — Лекция', type: 'study', desc: 'Песочная наб., д. 14, قاعة 206.' },
-        { id: 'fr_3', time: '11:30 - 13:00', title: 'Алгебра и алгоритмы — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 306.' },
-        { id: 'fr_4', time: '13:18 - 14:30', title: 'صلاة الجمعة المباركة والراحة الأسبوعية', type: 'prayer', desc: 'صلاة الجمعة وسورة الكهف.' },
-        { id: 'fr_5', time: '15:00 - 17:00', title: 'Русский язык (Разговорный) — Практика', type: 'study', desc: 'محادثة اللغة الروسية.' },
-        { id: 'fr_6', time: '15:25 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
-        { id: 'fr_7', time: '18:10 - 18:50', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'fr_8', time: '18:50 - 20:20', title: 'Введение в профессиональную деятельность — Практика', type: 'study', desc: 'Песочная наб., д. 14, قاعة 306.' },
-        { id: 'fr_9', time: '20:06 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام اليوم.' }
+        { id: 'fr_2', time: '07:25 - 07:55', title: 'التحرك المبكر إلى المبنى الأول (Песочная наб., д. 14)', type: 'travel', desc: 'التحرك صباحاً.' },
+        { id: 'fr_3', time: '08:10 - 09:40', title: 'Алгебра и алгоритмы — Лекция', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 206.' },
+        { id: 'fr_4', time: '11:30 - 13:00', title: 'Алгебра и алгоритмы — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 306.' },
+        { id: 'fr_5', time: '13:18 - 14:30', title: 'صلاة الجمعة المباركة والراحة الأسبوعية', type: 'prayer', desc: 'صلاة الجمعة وسورة الكهف.' },
+        { id: 'fr_6', time: '15:00 - 17:00', title: 'Русский язык (Разговорный) — Практика', type: 'study', desc: 'محادثة اللغة الروسية.' },
+        { id: 'fr_7', time: '15:25 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'fr_8', time: '18:10 - 18:50', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'fr_9', time: '18:15 - 18:45', title: 'التحرك المبكر إلى المبنى الأول (Песочная наб., д. 14)', type: 'travel', desc: 'التحرك لمحاضرة النشاط المهني.' },
+        { id: 'fr_10', time: '18:50 - 20:20', title: 'Введение в профессиональную деятельность — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 306.' },
+        { id: 'fr_11', time: '20:06 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام اليوم.' }
       ],
       sat: [
         { id: 'sa_1', time: '05:00 - 05:30', title: 'الاستيقاظ المبكر وصلاة الفجر + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية معسكر الـ 16 ساعة المكثف.' },
@@ -541,9 +555,10 @@
         { id: 'sa_6', time: '15:23 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
         { id: 'sa_7', time: '07:30 - 11:30', title: 'الفترة الثانية (ب): 4 ساعات جديد', type: 'camp', desc: 'متابعة المنهج الجديد.' },
         { id: 'sa_8', time: '18:07 - 18:45', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'sa_9', time: '18:50 - 20:20', title: 'Реформы и реформаторы (Лекция)', type: 'study', desc: 'عن بُعد عبر Контур Толк.' },
-        { id: 'sa_10', time: '20:30 - 22:00', title: 'Реформы и реформаторы (Практика)', type: 'study', desc: 'عن بُعد عبر Контур Толк.' },
-        { id: 'sa_11', time: '20:04 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام معسكر الـ 16 ساعة.' }
+        { id: 'sa_9', time: '18:35 - 18:55', title: 'التجهيز لمحاضرة تاريخ الإصلاحات (عن بُعد عبر Контур Толк)', type: 'travel', desc: 'تجهيز اللابتوب والإنترنت.' },
+        { id: 'sa_10', time: '18:50 - 20:20', title: 'Реформы и реформаторы (Лекция)', type: 'study', desc: 'عن بُعد عبر Контур Толк.' },
+        { id: 'sa_11', time: '20:30 - 22:00', title: 'Реформы и реформаторы (Практика)', type: 'study', desc: 'عن بُعد عبر Контур Толк.' },
+        { id: 'sa_12', time: '20:04 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام معسكر الـ 16 ساعة.' }
       ],
       sun: [
         { id: 'su_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية يوم العمل.' },
@@ -570,7 +585,6 @@
     let customHabits = JSON.parse(localStorage.getItem('itmo_custom_habits') || '[]');
     let userHabits = [...defaultHabits, ...customHabits];
     
-    // Load completion states for today
     const todayStr = new Date().toDateString();
     let savedHabitsState = JSON.parse(localStorage.getItem('itmo_habits_state') || '{}');
     if (savedHabitsState.date !== todayStr) {
@@ -582,8 +596,8 @@
       { text: "أصبحنا وأصبح الملك للّه، والحمد للّه، لا إله إلّا اللّه وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، رب أسألك خير ما في هذا اليوم وخیر ما بعده وأعوذ بك من شر ما في هذا اليوم وشر ما بعده، رب أعوذ بك من الكسل وسوء الكبر، رب أعوذ بك من عذاب في النار وعذاب في القبر.", count: 1 },
       { text: "اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور.", count: 1 },
       { text: "اللهم أنت ربي لا إله إلا أنت خلقتي وأنا عبدك وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.", count: 1 },
-      { text: "اللهم إني أصبحت أشهدك وأشهد حملة عرشك، وملائكتك وجميع خلقك، أنك أنت الله لا إله إلا أنت وحدك لا شريك لك، وأن محمداً عبدك ورسولك.", count: 4 },
-      { text: "اللهم ما أصبح بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك لك، فلك الحمد ولك الشكر.", count: 1 },
+      { text: "اللهم إني أصبحت أشهدك وأشهد حملة عرشك، وملائكتك وجميع خلقك، أنك أنت الله لا إله إلا أنت وحدك لا شريك له، وأن محمداً عبدك ورسولك.", count: 4 },
+      { text: "اللهم ما أصبح بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك له، فلك الحمد ولك الشكر.", count: 1 },
       { text: "اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت. اللهم إني أعوذ بك من الكفر، والفقر، اللهم إني أعوذ بك من عذاب القبر لا إله إلا أنت.", count: 3 },
       { text: "حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم.", count: 7 },
       { text: "اللهم إني أسألك العافية في الدنيا والآخرة، اللهم إني أسألك العفو والعافية في ديني ودنياي وأهلي ومالي، اللهم استر عوراتي وآمن روعاتي، اللهم احفظني من بين يدي ومن خلفي وعن يميني وعن شمالي ومن فوقي وأعوذ بعظمتك أن أغتال من تحتي.", count: 1 },
@@ -605,8 +619,8 @@
       { text: "امسينا وامسى الملك للّه، والحمد للّه، لا إله إلّا اللّه وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، رب أسألك خير ما في هذه الليله وخير ما بعدها وأعوذ بك من شر ما في هذه الليلة وشر ما بعدها، رب أعوذ بك من الكسل وسوء الكبر، رب أعوذ بك من عذاب في النار وعذاب في القبر.", count: 1 },
       { text: "اللهم بك أمسينا وبك أصبحنا وبك نحيا وبك نموت وإليك النشور.", count: 1 },
       { text: "اللهم أنت ربي لا إله إلا أنت خلقتي وأنا عبدك وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.", count: 1 },
-      { text: "اللهم إني امسيت أشهدك وأشهد حملة عرشك، وملائكتك وجميع خلقك، أنك أنت الله لا إله إلا أنت وحدك لا شريك لك، وأن محمداً عبدك ورسولك.", count: 4 },
-      { text: "اللهم ما امسى بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك لك، فلك الحمد ولك الشكر.", count: 1 },
+      { text: "اللهم إني امسيت أشهدك وأشهد حملة عرشك، وملائكتك وجميع خلقك، أنك أنت الله لا إله إلا أنت وحدك لا شريك له، وأن محمداً عبدك ورسولك.", count: 4 },
+      { text: "اللهم ما امسى بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك له، فلك الحمد ولك الشكر.", count: 1 },
       { text: "اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت. اللهم إني أعوذ بك من الكفر، والفقر، اللهم إني أعوذ بك من عذاب القبر لا إله إلا أنت.", count: 3 },
       { text: "حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم.", count: 7 },
       { text: "اللهم إني أسألك العافية في الدنيا والآخرة، اللهم إني أسألك العفو والعافية في ديني ودنياي وأهلي ومالي، اللهم استر عوراتي وآمن روعاتي، اللهم احفظني من بين يدي ومن خلفي وعن يميني وعن شمالي ومن فوقي وأعوذ بعظمتك أن أغتال من تحتي.", count: 1 },
@@ -721,24 +735,37 @@
 
       let html = '';
       scheduleItems.forEach(item => {
+        const isCancelled = !!cancelledLectures[item.id];
         html += `
-          <div class="p-4 rounded-2xl bg-slate-950/70 border border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-indigo-500/30 transition">
+          <div class="p-4 rounded-2xl bg-slate-950/70 border ${isCancelled ? 'border-rose-500/30 opacity-60 bg-rose-950/10' : 'border-white/5 hover:border-indigo-500/30'} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 transition">
             <div class="space-y-1">
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
                 <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono text-[11px] font-bold">${item.time}</span>
-                <h4 class="font-bold text-sm text-white">${item.title}</h4>
+                <h4 class="font-bold text-sm ${isCancelled ? 'line-through text-rose-300' : 'text-white'}">${item.title}</h4>
+                ${isCancelled ? '<span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold">محاضرة ملغاة ❌</span>' : ''}
               </div>
               <p class="text-xs text-slate-400 leading-relaxed">${item.desc}</p>
             </div>
             <div class="flex items-center gap-2 self-end sm:self-center">
               ${item.type === 'prayer' ? `<button onclick="openPostPrayerModalForCurrentUpcoming()" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold transition flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> الأذكار</button>` : ''}
-              <button onclick="openEditItemModal('${item.id}', '${item.title}', '${item.time}', '${item.desc}')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+              ${item.type === 'study' || item.type === 'travel' ? `
+                <button onclick="toggleLectureCancellation('${item.id}')" class="px-3 py-1.5 rounded-xl ${isCancelled ? 'bg-emerald-600 text-white' : 'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300'} text-xs font-bold transition flex items-center gap-1.5">
+                  <i data-lucide="${isCancelled ? 'check' : 'x-circle'}" class="w-3.5 h-3.5"></i> ${isCancelled ? 'استعادة' : 'إلغاء المحاضرة ❌'}
+                </button>
+              ` : ''}
             </div>
           </div>
         `;
       });
       container.innerHTML = html;
       if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function toggleLectureCancellation(itemId) {
+      cancelledLectures[itemId] = !cancelledLectures[itemId];
+      localStorage.setItem('itmo_cancelled_lectures', JSON.stringify(cancelledLectures));
+      renderSchedule();
+      showToast('تم تحديث حالة المحاضرة بنجاح ✔');
     }
 
     function addWater(amount) {
@@ -995,10 +1022,6 @@
       closeAthkarReaderModal();
     }
 
-    function openEditItemModal(k, t, tm, d) {
-      showToast(`تعديل عنصر الجدول: ${t}`);
-    }
-
     let tasbeehCounters = { subhan: 0, hamd: 0, takbeer: 0 };
     function switchPostPrayerTab(tab) {
       ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(t => {
@@ -1034,7 +1057,7 @@
           <div class="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-3">
             <h4 class="font-bold text-amber-300">أذكار خاصة بصلاتي الفجر والمغرب</h4>
             <div>
-              <p class="font-semibold text-xs mb-1">• التهليل (10 مرات): «لاَ إِلهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ»</p>
+              <p class="font-semibold text-xs mb-1">• التهليل (10 مرات)</p>
               <div class="flex flex-wrap gap-1.5">
                 ${Array.from({length: 10}, (_, i) => `<button onclick="this.classList.toggle('bg-amber-600'); this.classList.toggle('bg-slate-800');" class="w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-mono">${i+1}</button>`).join('')}
               </div>
@@ -1069,32 +1092,8 @@
               <button onclick="incrementTasbeeh('takbeer')" class="w-full py-1 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold">تكبيرة +1</button>
             </div>
           </div>
-          <p class="text-center text-xs text-slate-400 pt-1">تمام المائة: «لاَ إِلهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ».</p>
-        </div>
-
-        <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2">
-          <h4 class="font-bold text-emerald-400">4. آية الكرسي والمعوذات</h4>
-          <p class="font-semibold text-xs text-slate-300">آية الكرسي:</p>
-          <p class="text-xs">«اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ...»</p>
-          <p class="font-semibold text-xs text-slate-300 mt-2">المعوذات (سورة الإخلاص، الفلق، الناس):</p>
-          <p class="text-xs">${(tab === 'fajr' || tab === 'maghrib') ? 'تقرأ 3 مرات لكل سورة.' : 'تقرأ مرة واحدة لكل سورة.'}</p>
-        </div>
-
-        <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2">
-          <h4 class="font-bold text-emerald-400">5. الدعاء المأثور</h4>
-          <p>«اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ، وَشُكْرِكَ، وَحُسْنِ عِبَادَتِكَ».</p>
         </div>
       `;
-
-      if (tab === 'fajr') {
-        html += `
-          <div class="p-3.5 rounded-2xl bg-sky-950/30 border border-sky-500/30 space-y-2">
-            <h4 class="font-bold text-sky-300">دعاء بعد صلاة الفجر حصراً</h4>
-            <p>«اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا».</p>
-          </div>
-        `;
-      }
-
       container.innerHTML = html;
     }
 
@@ -1121,7 +1120,7 @@
       document.getElementById('live-detailed-date-display').innerHTML = `📅 ${now.toLocaleDateString('ar-EG', { weekday: 'long', month: 'long', day: 'numeric' })} - الوقت: ${now.toLocaleTimeString()}`;
 
       let todayPrayerData = prayersDatabase.find(p => p.day === currentDayNum && p.month === currentMonthNum);
-      if (!todayPrayerData) todayPrayerData = prayersDatabase[2]; // Fallback
+      if (!todayPrayerData) todayPrayerData = prayersDatabase[2];
 
       const timeToMinutes = (tStr) => {
         const [h, m] = tStr.split(':').map(Number);
@@ -1165,8 +1164,6 @@
       document.getElementById('next-prayer-exact-time').textContent = nextPrayer.time;
       document.getElementById('prayer-countdown-timer').textContent = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
-
-    function requestNotificationPermission() { showToast('تم تفعيل التنبيهات والأذان بنجاح ✔'); }
   </script>
 </body>
 </html>
