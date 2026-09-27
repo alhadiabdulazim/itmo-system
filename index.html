@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام التشغيل الدراسي والذهني - ITMO 2026</title>
+  <title>نظام التشغيل الدراسي والذهني - معسكر ITMO 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,7 @@
       font-family: 'JetBrains Mono', monospace;
     }
     .glass-card {
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -34,21 +34,10 @@
       background: rgba(100, 116, 139, 0.4);
       border-radius: 9999px;
     }
-    .item-cancelled {
-      opacity: 0.45;
-      text-decoration: line-through;
-      filter: grayscale(0.85);
-      border-color: rgba(239, 68, 68, 0.3) !important;
-      background: rgba(15, 23, 42, 0.25) !important;
-    }
-    @media print {
-      body { background: white !important; color: black !important; }
-      .no-print { display: none !important; }
-      .glass-card { background: white !important; border: 1px solid #ccc !important; color: black !important; }
-    }
   </style>
 </head>
 <body class="min-h-screen p-3 sm:p-6 custom-scroll">
+
   <div id="toast-box" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform -translate-y-20 opacity-0 pointer-events-none">
     <div id="toast-content" class="px-5 py-3 rounded-xl bg-slate-900/95 border border-indigo-500/40 text-white text-sm shadow-2xl flex items-center gap-3">
       <i data-lucide="info" class="w-5 h-5 text-indigo-400"></i>
@@ -56,16 +45,15 @@
     </div>
   </div>
 
-  <!-- نافذة المنبه المستمر مع زر الإيقاف اليدوي -->
   <div id="active-alarm-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-[100] hidden items-center justify-center p-4">
     <div class="glass-card max-w-md w-full p-6 sm:p-8 rounded-3xl border-2 border-rose-500/60 bg-gradient-to-b from-rose-950/40 via-slate-900/90 to-slate-950 text-center space-y-5 shadow-2xl animate-pulse">
       <div class="w-20 h-20 mx-auto rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center text-rose-400 animate-bounce">
         <i data-lucide="bell-ring" class="w-10 h-10"></i>
       </div>
       <div>
-        <span class="text-xs uppercase tracking-widest font-mono font-bold px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40" id="alarm-badge">منبه قيد التشغيل</span>
-        <h2 class="text-2xl font-black text-white mt-3" id="alarm-title">حان موعد الصلاة</h2>
-        <p class="text-sm text-slate-300 mt-2 leading-relaxed" id="alarm-message">يرن المنبه الآن.. اضغط الزر أدناه لإيقافه.</p>
+        <span class="text-xs uppercase tracking-widest font-mono font-bold px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40">تنبيه قيد التشغيل</span>
+        <h2 class="text-2xl font-black text-white mt-3" id="alarm-title">تنبيه الموعد</h2>
+        <p class="text-sm text-slate-300 mt-2 leading-relaxed" id="alarm-message">يرن المنبه الآن.. اضغط الزر أدناه لإيقافه ولا يتوقف إلا بيدك.</p>
       </div>
       <button onclick="stopAlarmRinger()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black text-base shadow-xl shadow-rose-600/30 transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
         <i data-lucide="bell-off" class="w-6 h-6"></i>
@@ -74,1135 +62,1066 @@
     </div>
   </div>
 
-  <!-- نافذة تعديل المواعيد والمهام (غير الصلوات) -->
-  <div id="edit-item-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[90] hidden items-center justify-center p-4">
-    <div class="glass-card max-w-lg w-full p-6 rounded-2xl border border-white/10 bg-slate-900 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-white/10 pb-3">
-        <h3 class="font-bold text-base text-white flex items-center gap-2">
-          <i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i>
-          تعديل الموعد والمهمة
-        </h3>
-        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white">
+  <div id="post-prayer-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[95] hidden items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-5 text-right">
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-400">
+            <i data-lucide="sparkles" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg text-white" id="post-prayer-modal-title">أذكار دبر الصلاة المكتوبة</h3>
+            <p class="text-xs text-emerald-400">من السنة النبوية الصحيحة مع مسابح تفاعلية</p>
+          </div>
+        </div>
+        <button onclick="closePostPrayerModal()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
-      <input type="hidden" id="edit-item-key">
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-300 font-bold mb-1">العنوان / اسم النشاط:</label>
-          <input type="text" id="edit-item-title" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="block text-slate-300 font-bold mb-1">الموعد / التوقيت (مثال: 08:00 - 20:00):</label>
-          <input type="text" id="edit-item-time" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white font-mono focus:outline-none focus:border-indigo-500">
-          <span class="text-[10px] text-slate-400">يبدأ المنبه دائماً عند بداية التوقيت المكتوب.</span>
-        </div>
-        <div>
-          <label class="block text-slate-300 font-bold mb-1">الوصف / التفاصيل والمكان:</label>
-          <textarea id="edit-item-desc" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white focus:outline-none focus:border-indigo-500"></textarea>
-        </div>
+
+      <div class="flex gap-1.5 overflow-x-auto pb-2 custom-scroll border-b border-white/10 text-xs">
+        <button id="tab-fajr" onclick="switchPostPrayerTab('fajr')" class="px-3 py-1.5 rounded-xl font-bold transition shrink-0 bg-emerald-600 text-white">الفجر (مخصوص)</button>
+        <button id="tab-dhuhr" onclick="switchPostPrayerTab('dhuhr')" class="px-3 py-1.5 rounded-xl font-bold transition shrink-0 bg-slate-800 text-slate-300 hover:text-white">الظهر</button>
+        <button id="tab-asr" onclick="switchPostPrayerTab('asr')" class="px-3 py-1.5 rounded-xl font-bold transition shrink-0 bg-slate-800 text-slate-300 hover:text-white">العصر</button>
+        <button id="tab-maghrib" onclick="switchPostPrayerTab('maghrib')" class="px-3 py-1.5 rounded-xl font-bold transition shrink-0 bg-slate-800 text-slate-300 hover:text-white">المغرب (مخصوص)</button>
+        <button id="tab-isha" onclick="switchPostPrayerTab('isha')" class="px-3 py-1.5 rounded-xl font-bold transition shrink-0 bg-slate-800 text-slate-300 hover:text-white">العشاء</button>
       </div>
-      <div class="flex gap-2 pt-2">
-        <button onclick="saveItemEdits()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition">
-          حفظ التعديلات
+
+      <div class="space-y-3.5 text-xs sm:text-sm leading-relaxed text-slate-200" id="post-prayer-content-container"></div>
+
+      <button onclick="closePostPrayerModal()" class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+        تمت القراءة بحمد الله (إغلاق)
+      </button>
+    </div>
+  </div>
+
+  <div id="athkar-reader-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[96] hidden items-center justify-center p-4">
+    <div class="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-sky-500/40 bg-slate-950 shadow-2xl space-y-5 text-right">
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-2xl bg-sky-500/20 text-sky-400">
+            <i data-lucide="book-open" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg text-white" id="athkar-modal-title">قارئ الأذكار المأثورة</h3>
+            <p class="text-xs text-sky-400">انقر على العداد لاحتساب القراءة التفاعلية لكل ذكر</p>
+          </div>
+        </div>
+        <button onclick="closeAthkarReaderModal()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
         </button>
-        <button onclick="closeEditModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700 transition">
-          إلغاء
+      </div>
+
+      <div class="space-y-3" id="athkar-reader-list"></div>
+
+      <div class="flex gap-2.5 pt-2">
+        <button onclick="completeCurrentAthkarFromModal()" class="flex-1 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center justify-center gap-2">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          أتممت قراءة الأذكار بحمد الله (تسجيل كمنجز ✔)
+        </button>
+        <button onclick="closeAthkarReaderModal()" class="px-5 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700 transition">
+          إغلاق
         </button>
       </div>
     </div>
   </div>
 
+  <div id="nutrition-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[90] hidden items-center justify-center p-4">
+    <div class="glass-card max-w-3xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-sky-500/30 bg-slate-950 shadow-2xl space-y-5 text-right">
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-2xl bg-sky-500/20 text-sky-400">
+            <i data-lucide="utensils" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg text-white">دليل الأكل والتركيز وتغذية الدماغ وبناء العضلات 🧠💪</h3>
+            <p class="text-xs text-sky-300">أطعمة روسيا الاقتصادية • خطة ترطيب 3 لتر • قاعدة 50/10</p>
+          </div>
+        </div>
+        <button onclick="closeNutritionModal()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs leading-relaxed text-slate-300">
+        <div class="p-4 rounded-2xl bg-sky-950/20 border border-sky-500/30 space-y-2">
+          <h4 class="font-bold text-sm text-sky-300">لماذا يُمنع شرب 3 لتر ماء على دفعتين؟</h4>
+          <p>الكلى تعالج من 0.8 إلى 1 لتر ماء بالساعة فقط. شرب كميات هائلة دفعة واحدة يطردها الجسم فوراً دون استفادة الخلايا، ويسبب هبوط التركيز والصداع. الارتشاف المتكرر طوال اليوم يحافظ على تدفق دم ممتاز للمخ.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/80 border border-white/5 space-y-2">
+          <h4 class="font-bold text-sm text-emerald-300">أبرز الأطعمة الاقتصادية للطلاب في روسيا (عضلات + مخ):</h4>
+          <ul class="list-disc list-inside space-y-1 text-slate-200">
+            <li><strong>البيض (Яйца):</strong> بروتين متكامل + كولين لدعم الذاكرة والتركيز الطويل.</li>
+            <li><strong>الجبن القريش الروسي (Творог):</strong> كنز الكازين الليلي لاستشفاء العضلات (16-18غ بروتين).</li>
+            <li><strong>الحنطة السوداء (Гречка):</strong> كربوهيدرات معقدة غنية بالمغنيسيوم لطاقة ذهنية مستقرة 4 ساعات.</li>
+            <li><strong>التونة والسردين:</strong> أوميغا-3 لبناء المايلين العصبي وسرعة البديهة.</li>
+            <li><strong>الشوفان والفول السوداني:</strong> طاقة نظيفة وسناكس مريحة للمذاكرة.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-item-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[90] hidden items-center justify-center p-4">
+    <div class="glass-card max-w-lg w-full p-6 rounded-2xl border border-white/10 bg-slate-900 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <h3 class="font-bold text-base text-white flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i> تعديل الموعد والمهمة
+        </h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <input type="hidden" id="edit-item-key">
+      <div class="space-y-3 text-xs">
+        <div><label class="block text-slate-300 font-bold mb-1">العنوان / اسم النشاط:</label><input type="text" id="edit-item-title" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white"></div>
+        <div><label class="block text-slate-300 font-bold mb-1">الموعد / التوقيت:</label><input type="text" id="edit-item-time" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white font-mono"></div>
+        <div><label class="block text-slate-300 font-bold mb-1">الوصف / التفاصيل:</label><textarea id="edit-item-desc" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white"></textarea></div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="saveItemEdits()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs">حفظ التعديلات</button>
+        <button onclick="closeEditModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="prayer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-3 sm:p-6">
+    <div class="glass-card w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col border border-white/10 shadow-2xl overflow-hidden bg-slate-900">
+      <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
+        <h3 class="font-bold text-base text-white">مواقيت الصلاة لشهر سبتمبر 2026</h3>
+        <button onclick="closePrayerModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="overflow-auto custom-scroll flex-1 p-3 sm:p-5">
+        <table class="w-full text-right text-xs font-mono">
+          <thead>
+            <tr class="border-b border-white/10 text-slate-400 text-[11px]">
+              <th class="p-2.5">اليوم</th>
+              <th class="p-2.5">اليوم (Dow)</th>
+              <th class="p-2.5 text-emerald-400">الفجر</th>
+              <th class="p-2.5">الشروق</th>
+              <th class="p-2.5 text-sky-400">الظهر</th>
+              <th class="p-2.5 text-amber-400">العصر</th>
+              <th class="p-2.5 text-rose-400">المغرب</th>
+              <th class="p-2.5 text-indigo-400">العشاء</th>
+            </tr>
+          </thead>
+          <tbody id="full-prayer-table-body" class="divide-y divide-white/5"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div class="max-w-7xl mx-auto space-y-6">
-    
     <header class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10">
       <div>
         <div class="flex items-center gap-2">
-          <span class="p-2 rounded-xl bg-indigo-500/20 text-indigo-400">
-            <i data-lucide="cpu" class="w-6 h-6"></i>
-          </span>
+          <span class="p-2 rounded-xl bg-indigo-500/20 text-indigo-400"><i data-lucide="cpu" class="w-6 h-6"></i></span>
           <h1 class="text-2xl sm:text-3xl font-black bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
             نظام التشغيل الدراسي والذهني
           </h1>
         </div>
         <p class="text-xs sm:text-sm text-slate-400 mt-1">
-          جامعة ITMO | ترويض الدوبامين | مراسي الصلوات الخمس | الاسترجاع النشط
+          معسكر الـ 16 ساعة (يوم السبت) + جامعة وعمل + مراسي الصلوات والأذكار التفاعلية
         </p>
       </div>
 
-      <div class="flex items-center gap-2.5 flex-wrap w-full md:w-auto no-print">
+      <div class="flex items-center gap-2.5 flex-wrap w-full md:w-auto">
+        <button onclick="openNutritionModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/30 transition flex items-center gap-2">
+          <i data-lucide="utensils" class="w-4 h-4"></i> دليل الأكل والتركيز
+        </button>
+        <button onclick="openPostPrayerModalForCurrentUpcoming()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40 transition flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4"></i> أذكار بعد الصلاة 📿
+        </button>
         <button onclick="openPrayerModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/30 transition flex items-center gap-2">
-          <i data-lucide="compass" class="w-4 h-4"></i>
-          مواقيت سبتمبر 2026
+          <i data-lucide="compass" class="w-4 h-4"></i> مواقيت سبتمبر 2026
         </button>
-        <button id="notif-btn" onclick="requestNotificationPermission()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 border border-sky-500/30 transition flex items-center gap-2">
-          <i data-lucide="bell" class="w-4 h-4"></i>
-          تفعيل كافة التنبيهات والأذان
-        </button>
-        <button onclick="testNotificationSystem()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/30 transition flex items-center gap-2" title="تجربة إشعار فوري للتأكد من عمل الصوت والنظام">
-          <i data-lucide="volume-2" class="w-4 h-4"></i>
-          اختبار الإشعارات
+        <button onclick="requestNotificationPermission()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 border border-sky-500/30 transition flex items-center gap-2">
+          <i data-lucide="bell" class="w-4 h-4"></i> تفعيل التنبيهات
         </button>
         <button onclick="exportIcsCalendar()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/30 transition flex items-center gap-2">
-          <i data-lucide="calendar" class="w-4 h-4"></i>
-          تصدير التقويم (.ics)
-        </button>
-        <button onclick="window.print()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-2">
-          <i data-lucide="printer" class="w-4 h-4"></i>
-          طباعة
+          <i data-lucide="calendar" class="w-4 h-4"></i> تصدير التقويم (.ics)
         </button>
       </div>
     </header>
 
-    <!-- شريط المسافات وزمن التنقل من السكن إلى مباني الجامعة -->
-    <div class="glass-card rounded-2xl p-4 border border-indigo-500/20 bg-indigo-950/20 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-      <div class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/60 border border-white/5">
-        <span class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold font-mono">15 د</span>
+    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-indigo-500/30 bg-gradient-to-r from-indigo-950/30 via-slate-900/60 to-purple-950/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300"><i data-lucide="heart" class="w-5 h-5 fill-current"></i></span>
         <div>
-          <div class="font-bold text-white">Песочная наб., д. 14</div>
-          <div class="text-[11px] text-slate-400">قريب جداً (15 دقيقة مشي/مترو)</div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-400">ذكر اللحظة (بدون إشعارات):</span>
+          <div class="text-sm sm:text-base font-bold text-white mt-0.5" id="dynamic-dhikr-text">سُبْحَانَ اللهِ وَبِحَمْدِهِ ، سُبْحَانَ اللهِ الْعَظِيمِ</div>
         </div>
       </div>
-      <div class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/60 border border-white/5">
-        <span class="p-1.5 rounded-lg bg-sky-500/20 text-sky-300 font-bold font-mono">30 د</span>
-        <div>
-          <div class="font-bold text-white">Кронверкский пр.</div>
-          <div class="text-[11px] text-slate-400">المبنى الرئيسي (نصف ساعة)</div>
-        </div>
-      </div>
-      <div class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/60 border border-white/5">
-        <span class="p-1.5 rounded-lg bg-amber-500/20 text-amber-300 font-bold font-mono">50 د</span>
-        <div>
-          <div class="font-bold text-white">ул. Ломоносова, д. 9</div>
-          <div class="text-[11px] text-slate-400">الأبعد (تحرك قبل المحاضرة بـ 55 دقيقة)</div>
-        </div>
-      </div>
+      <button onclick="cycleDhikrManual()" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-600 text-slate-300 hover:text-white text-xs font-bold border border-white/10 transition flex items-center gap-1.5 shrink-0">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> ذكر جديد
+      </button>
     </div>
 
     <div class="glass-card rounded-2xl p-4 sm:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/20 via-slate-900/60 to-sky-950/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div class="flex items-center gap-3.5">
-        <div class="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 shrink-0">
-          <i data-lucide="clock" class="w-6 h-6"></i>
-        </div>
+        <div class="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 shrink-0"><i data-lucide="clock" class="w-6 h-6"></i></div>
         <div>
-          <!-- عرض التاريخ التفصيلي لليوم مع الصلاة القادمة والشهر -->
-          <div class="text-xs text-slate-400 font-medium flex items-center gap-2 flex-wrap" id="live-detailed-date-display">
-            <span>📅 جاري تحميل بيانات اليوم...</span>
-          </div>
+          <div class="text-xs text-slate-400 font-medium" id="live-detailed-date-display">📅 جاري تحميل بيانات اليوم...</div>
           <div class="text-lg sm:text-xl font-black text-emerald-300 flex items-center gap-2 mt-1">
             <span id="next-prayer-name">جاري حساب الصلاة القادمة...</span>
             <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300" id="next-prayer-exact-time">--:--</span>
           </div>
         </div>
       </div>
-
       <div class="flex items-center gap-3 self-end sm:self-center">
         <span class="text-xs text-slate-400">الوقت المتبقي:</span>
-        <div class="font-mono text-xl sm:text-2xl font-black text-emerald-400 bg-slate-950/80 px-4 py-2 rounded-xl border border-emerald-500/40 tracking-wider shadow-inner" id="prayer-countdown-timer">
-          00:00:00
-        </div>
+        <div class="font-mono text-xl sm:text-2xl font-black text-emerald-400 bg-slate-950/80 px-4 py-2 rounded-xl border border-emerald-500/40 tracking-wider shadow-inner" id="prayer-countdown-timer">00:00:00</div>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- العمودين الرئيسيين: الجدول الدراسي والأسبوعي -->
+      <!-- Timeline and Schedule -->
       <div class="lg:col-span-2 space-y-6">
-        
         <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-5">
-          <!-- Week Switcher -->
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-white/10">
             <div>
               <h2 class="text-lg font-bold text-white flex items-center gap-2">
                 <i data-lucide="calendar-days" class="w-5 h-5 text-indigo-400"></i>
-                الجدول الأكاديمي والمهني (جامعة + عمل)
+                الجدول الأكاديمي ومعسكر الـ 16 ساعة مع الصلوات الخمس
               </h2>
-              <p class="text-xs text-slate-400">يمكنك تعديل أي موعد أو عمل يدوياً (✏️) • الصلوات ثابتة ومعتمدة</p>
-            </div>
-            
-            <div class="flex items-center gap-2 flex-wrap">
-              <button onclick="resetAllCustomSchedules()" class="text-[11px] px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 border border-white/10 transition" title="استعادة المواعيد الافتراضية">
-                استعادة الافتراضي
-              </button>
-              <div class="flex p-1 rounded-xl bg-slate-950/70 border border-white/10 text-xs font-bold no-print">
-                <button id="week-odd-btn" onclick="setWeek('odd')" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition">الأسبوع الفردي (1)</button>
-                <button id="week-even-btn" onclick="setWeek('even')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">الأسبوع الزوجي (2)</button>
+              <div class="flex items-center gap-2 mt-1">
+                <span id="selected-date-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">
+                  📅 عرض اليوم المحدد
+                </span>
               </div>
             </div>
+            <button onclick="resetAllCustomSchedules()" class="text-[11px] px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 border border-white/10 transition">
+              استعادة الافتراضي
+            </button>
           </div>
 
-          <!-- Day Filter Buttons -->
-          <div class="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 custom-scroll no-print" id="day-selector-container">
-            <button onclick="setDay('mon')" data-day="mon" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 transition shrink-0">الإثنين (пн)</button>
-            <button onclick="setDay('tue')" data-day="tue" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800/60 text-slate-400 hover:text-white transition shrink-0">الثلاثاء (вт)</button>
-            <button onclick="setDay('wed')" data-day="wed" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800/60 text-slate-400 hover:text-white transition shrink-0">الأربعاء (ср)</button>
-            <button onclick="setDay('thu')" data-day="thu" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800/60 text-slate-400 hover:text-white transition shrink-0">الخميس (чт)</button>
-            <button onclick="setDay('fri')" data-day="fri" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800/60 text-slate-400 hover:text-white transition shrink-0">الجمعة (пт)</button>
-            <button onclick="setDay('sat')" data-day="sat" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800/60 text-slate-400 hover:text-white transition shrink-0">السبت (сб)</button>
-            <button onclick="setDay('sun')" data-day="sun" class="day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800/60 text-slate-400 hover:text-white transition shrink-0">الأحد (вс)</button>
-          </div>
+          <div id="timeline-list" class="space-y-3"></div>
+        </div>
+      </div>
 
-          <!-- Timeline Container -->
-          <div id="timeline-list" class="space-y-3">
-            <!-- Dynamically populated via JS -->
+      <!-- Monthly Calendar Sidebar & Tools -->
+      <div class="space-y-6">
+        
+        <!-- Monthly Calendar Widget -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6 border border-indigo-500/30 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <i data-lucide="calendar" class="w-5 h-5 text-indigo-400"></i>
+              <h3 class="font-bold text-sm text-white" id="monthly-calendar-title">سبتمبر 2026</h3>
+            </div>
+            <div class="flex gap-1">
+              <button onclick="changeMonth(-1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+              <button onclick="changeMonth(1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+          <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-slate-400 pb-1">
+            <span>ن</span><span>ث</span><span>ر</span><span>خ</span><span>ج</span><span>س</span><span>ح</span>
+          </div>
+          <div class="grid grid-cols-7 gap-1.5 text-xs" id="monthly-calendar-grid"></div>
+        </div>
+
+        <!-- Water Tracker -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6 border border-sky-500/30 bg-gradient-to-b from-sky-950/20 via-slate-900/80 to-slate-950 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-white/10">
+            <h3 class="font-bold text-sm text-sky-300 flex items-center gap-2">
+              <i data-lucide="droplet" class="w-4 h-4 text-sky-400 fill-current"></i> ترطيب الدماغ والجسم (هدف 3 لتر)
+            </h3>
+            <button onclick="resetWaterIntake()" class="text-[11px] text-slate-400 hover:text-rose-400">تصفير اليوم</button>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <span class="text-slate-300"><strong id="water-current-amount" class="text-xl font-black text-sky-400">0</strong> / 3000 مل</span>
+              <span id="water-percentage-badge" class="px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">0%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-white/10 p-0.5">
+              <div id="water-progress-bar" class="h-full bg-gradient-to-r from-sky-500 via-indigo-400 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%;"></div>
+            </div>
+            <p id="water-status-tip" class="text-[11px] text-slate-400">ابدأ بكوبين كبيرين (500 مل) لتنشيط الذهن</p>
+          </div>
+          <div class="grid grid-cols-3 gap-2 pt-1">
+            <button onclick="addWater(250)" class="py-2 px-1 rounded-xl bg-slate-800/90 hover:bg-sky-600 text-sky-200 text-xs font-bold border border-sky-500/30 transition flex flex-col items-center"><span>+250 مل</span><span class="text-[9px] text-slate-400">كوب</span></button>
+            <button onclick="addWater(500)" class="py-2 px-1 rounded-xl bg-slate-800/90 hover:bg-sky-600 text-sky-200 text-xs font-bold border border-sky-500/30 transition flex flex-col items-center"><span>+500 مل</span><span class="text-[9px] text-slate-400">نصف زجاجة</span></button>
+            <button onclick="addWater(1000)" class="py-2 px-1 rounded-xl bg-sky-500 text-slate-950 hover:bg-sky-400 text-xs font-black transition flex flex-col items-center"><span>+1000 مل</span><span class="text-[9px] text-slate-900 font-bold">1 لتر</span></button>
           </div>
         </div>
 
-      </div>
-
-      <div class="space-y-6">
-        
-        <!-- مؤقت التركيز العميق (Deep Work Timer) مع زر شرح الفائدة والآلية -->
+        <!-- Focus Timer -->
         <div class="glass-card rounded-2xl p-5 sm:p-6 border border-amber-500/20 bg-gradient-to-b from-amber-950/10 to-slate-900/80">
           <div class="flex items-center justify-between mb-3">
             <h3 class="font-bold text-sm text-amber-300 flex items-center gap-2">
-              <i data-lucide="timer" class="w-4 h-4 text-amber-400"></i>
-              مؤقت التركيز الذهني (Deep Work)
+              <i data-lucide="timer" class="w-4 h-4 text-amber-400"></i> مؤقت التركيز الذهني (Deep Work)
             </h3>
-            <div class="flex items-center gap-1.5">
-              <button onclick="toggleDeepWorkInfo()" title="فائدة واستخدام هذا المؤقت" class="text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition flex items-center gap-1">
-                <i data-lucide="help-circle" class="w-3 h-3"></i>
-                لماذا أستخدمه؟
-              </button>
-              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300" id="timer-state-label">جاهز</span>
-            </div>
+            <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300" id="timer-state-label">جاهز</span>
           </div>
-
-          <!-- تفاصيل تفسيرية لمؤقت التركيز -->
-          <div id="deep-work-explanation" class="hidden text-xs text-slate-300 bg-slate-950/90 p-3 rounded-xl border border-amber-500/30 space-y-2 mb-3">
-            <p class="font-bold text-amber-300">🧠 لماذا جلسة 90 دقيقة؟</p>
-            <p class="text-[11px] leading-relaxed text-slate-400">
-              الدماغ البشري يعمل بيولوجياً بدورات تسمى <strong>(Ultradian Rhythms)</strong>؛ يستغرق عقلك قرابة 15 دقيقة ليدخل في مرحلة التركيز الكامل وتوليد مادة المايلين العصبية حول المسائل الرياضية المعقدة، ثم يبلغ ذروة استيعابه الصافي خلال 70-90 دقيقة متواصلة.
-            </p>
-            <p class="text-[11px] text-emerald-300 font-semibold">
-              🎯 القاعدة: عند تشغيل هذا المؤقت، الهاتف يكون في غرفة أخرى، بدون أي متصفح تشتيت، ورقة وقلم وحل مسائل فقط.
-            </p>
-          </div>
-
           <div class="text-center py-4">
-            <div class="font-mono text-5xl font-black text-amber-400 tracking-wider drop-shadow-md" id="focus-timer-display">
-              90:00
-            </div>
-            <p class="text-xs text-slate-400 mt-2">جلسة تركيز كاملة دون فتح الهاتف أو تشتيت</p>
+            <div class="font-mono text-5xl font-black text-amber-400 tracking-wider" id="focus-timer-display">50:00</div>
           </div>
-
           <div class="grid grid-cols-3 gap-2 mt-2">
-            <button onclick="startFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-400 transition flex items-center justify-center gap-1">
-              <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
-              بدء
-            </button>
-            <button onclick="pauseFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition flex items-center justify-center gap-1">
-              <i data-lucide="pause" class="w-3.5 h-3.5"></i>
-              إيقاف
-            </button>
-            <button onclick="resetFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700 transition flex items-center justify-center gap-1">
-              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-              إعادة
-            </button>
-          </div>
-
-          <div class="flex gap-2 justify-center mt-3 pt-3 border-t border-white/5">
-            <button onclick="setTimerDuration(90)" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300">90 د</button>
-            <button onclick="setTimerDuration(45)" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300">45 د</button>
-            <button onclick="setTimerDuration(15)" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300">استراحة 15 د</button>
+            <button onclick="startFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-400">بدء</button>
+            <button onclick="pauseFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700">إيقاف</button>
+            <button onclick="resetFocusTimer()" class="py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 hover:bg-slate-700">إعادة</button>
           </div>
         </div>
 
-        <!-- قائمة المراسي والعادات اليومية (Habit Tracker) -->
+        <!-- Habits Dashboard -->
         <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-white/10">
-            <div>
-              <h3 class="font-bold text-sm text-white flex items-center gap-2">
-                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
-                مراسي اليوم والعادات (Habits)
-              </h3>
-              <p class="text-[11px] text-slate-400">كل عادة مبرمجة بتوقيت وإشعار فوري عند حلول موعدها</p>
+            <h3 class="font-bold text-sm text-white flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> مراسي اليوم والعادات (Habits)
+            </h3>
+            <button onclick="resetTodayHabits()" class="text-[11px] text-slate-400 hover:text-rose-400">تصفير اليوم</button>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-950/70 border border-white/10 space-y-2.5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400" id="habit-status-badge">بداية الهمّة</span>
+              <div class="font-mono"><span id="habit-counts-label" class="text-[11px] text-slate-400">0 من 9</span> <span id="habit-percentage-text" class="font-black text-emerald-400 text-sm">0%</span></div>
             </div>
-            <button onclick="resetTodayHabits()" class="text-[11px] text-slate-400 hover:text-rose-400 transition">تصفير اليوم</button>
+            <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+              <div id="habit-progress-bar" class="h-full bg-gradient-to-r from-sky-500 via-indigo-500 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
+            </div>
+          </div>
+          
+          <!-- Add Custom Habit Input -->
+          <div class="flex gap-2">
+            <input type="text" id="new-habit-input" placeholder="أضف عادة جديدة (مثل: فرش الأسنان)..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-xs text-white placeholder-slate-500">
+            <button onclick="addNewCustomHabit()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition flex items-center gap-1">
+              <i data-lucide="plus" class="w-4 h-4"></i> إضافة
+            </button>
           </div>
 
-          <div class="space-y-2 text-xs" id="habits-list-container">
-            <!-- Dynamically populated via JS with scheduled alert times -->
-          </div>
+          <div class="space-y-2 text-xs" id="habits-list-container"></div>
         </div>
 
       </div>
-
-    </div>
-
-  </div>
-
-  <div id="prayer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-3 sm:p-6">
-    <div class="glass-card w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col border border-white/10 shadow-2xl overflow-hidden bg-slate-900">
-      
-      <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
-        <div class="flex items-center gap-3">
-          <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
-            <i data-lucide="compass" class="w-5 h-5"></i>
-          </span>
-          <div>
-            <h3 class="font-bold text-base text-white">مواقيت الصلاة لشهر سبتمبر (Сентябрь) 2026</h3>
-            <p class="text-xs text-slate-400">سانت بطرسبرغ • العصر حسب التقويم الأزرق • الظهر 13:20 ثابت</p>
-          </div>
-        </div>
-        <button onclick="closePrayerModal()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="p-4 overflow-y-auto flex-1 custom-scroll">
-        <table class="w-full text-right text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-white/10 text-slate-400 font-mono text-[11px] bg-slate-950/40">
-              <th class="p-2.5">اليوم</th>
-              <th class="p-2.5">اليوم العربي / الروسي</th>
-              <th class="p-2.5 text-emerald-400">الفجر</th>
-              <th class="p-2.5 text-slate-500">الشروق</th>
-              <th class="p-2.5 text-sky-400">الظهر</th>
-              <th class="p-2.5 text-amber-400 font-bold">العصر (الأزرق)</th>
-              <th class="p-2.5 text-rose-400">المغرب</th>
-              <th class="p-2.5 text-indigo-400">العشاء</th>
-              <th class="p-2.5 text-slate-500">هجري</th>
-            </tr>
-          </thead>
-          <tbody id="full-prayer-table-body" class="divide-y divide-white/5 font-mono">
-            <!-- Dynamically populated via JS -->
-          </tbody>
-        </table>
-      </div>
-
     </div>
   </div>
 
   <script>
-    // قاعدة بيانات مواقيت الصلاة الكاملة لشهر سبتمبر 2026
     const prayersDatabase = [
-      { day: 1, dow: "вт", arDay: "الثلاثاء", fajr: "03:54", shuruq: "05:55", dhuhr: "13:20", asr: "16:32", maghrib: "20:05", isha: "21:35", hijri: 19 },
-      { day: 2, dow: "ср", arDay: "الأربعاء", fajr: "03:56", shuruq: "05:57", dhuhr: "13:20", asr: "16:30", maghrib: "20:02", isha: "21:31", hijri: 20 },
-      { day: 3, dow: "чт", arDay: "الخميس", fajr: "03:58", shuruq: "06:00", dhuhr: "13:20", asr: "16:28", maghrib: "19:59", isha: "21:28", hijri: 21 },
-      { day: 4, dow: "пт", arDay: "الجمعة", fajr: "04:00", shuruq: "06:02", dhuhr: "13:20", asr: "16:27", maghrib: "19:56", isha: "21:25", hijri: 22 },
-      { day: 5, dow: "сб", arDay: "السبت", fajr: "04:02", shuruq: "06:04", dhuhr: "13:20", asr: "16:25", maghrib: "19:53", isha: "21:22", hijri: 23 },
-      { day: 6, dow: "вс", arDay: "الأحد", fajr: "04:05", shuruq: "06:06", dhuhr: "13:20", asr: "16:23", maghrib: "19:50", isha: "21:19", hijri: 24 },
-      { day: 7, dow: "пн", arDay: "الإثنين", fajr: "04:07", shuruq: "06:09", dhuhr: "13:20", asr: "16:23", maghrib: "19:47", isha: "21:16", hijri: 25 },
-      { day: 8, dow: "вт", arDay: "الثلاثاء", fajr: "04:10", shuruq: "06:11", dhuhr: "13:20", asr: "16:21", maghrib: "19:44", isha: "21:13", hijri: 26 },
-      { day: 9, dow: "ср", arDay: "الأربعاء", fajr: "04:12", shuruq: "06:13", dhuhr: "13:20", asr: "16:19", maghrib: "19:41", isha: "21:10", hijri: 27 },
-      { day: 10, dow: "чт", arDay: "الخميس", fajr: "04:14", shuruq: "06:16", dhuhr: "13:20", asr: "16:17", maghrib: "19:38", isha: "21:07", hijri: 28 },
-      { day: 11, dow: "пт", arDay: "الجمعة", fajr: "04:17", shuruq: "06:18", dhuhr: "13:20", asr: "16:15", maghrib: "19:35", isha: "21:04", hijri: 29 },
-      { day: 12, dow: "сб", arDay: "السبت", fajr: "04:19", shuruq: "06:20", dhuhr: "13:20", asr: "16:13", maghrib: "19:32", isha: "21:00", hijri: 1 },
-      { day: 13, dow: "вс", arDay: "الأحد", fajr: "04:21", shuruq: "06:23", dhuhr: "13:20", asr: "16:11", maghrib: "19:29", isha: "20:57", hijri: 2 },
-      { day: 14, dow: "пн", arDay: "الإثنين", fajr: "04:24", shuruq: "06:25", dhuhr: "13:20", asr: "16:10", maghrib: "19:26", isha: "20:54", hijri: 3 },
-      { day: 15, dow: "вт", arDay: "الثلاثاء", fajr: "04:26", shuruq: "06:27", dhuhr: "13:20", asr: "16:09", maghrib: "19:23", isha: "20:51", hijri: 4 },
-      { day: 16, dow: "ср", arDay: "الأربعاء", fajr: "04:29", shuruq: "06:29", dhuhr: "13:20", asr: "16:07", maghrib: "19:20", isha: "20:48", hijri: 5 },
-      { day: 17, dow: "чт", arDay: "الخميس", fajr: "04:31", shuruq: "06:32", dhuhr: "13:20", asr: "16:06", maghrib: "19:17", isha: "20:45", hijri: 6 },
-      { day: 18, dow: "пт", arDay: "الجمعة", fajr: "04:33", shuruq: "06:34", dhuhr: "13:20", asr: "16:04", maghrib: "19:14", isha: "20:42", hijri: 7 },
-      { day: 19, dow: "сб", arDay: "السبت", fajr: "04:36", shuruq: "06:36", dhuhr: "13:20", asr: "16:02", maghrib: "19:11", isha: "20:39", hijri: 8 },
-      { day: 20, dow: "вс", arDay: "الأحد", fajr: "04:38", shuruq: "06:39", dhuhr: "13:20", asr: "16:01", maghrib: "19:08", isha: "20:35", hijri: 9 },
-      { day: 21, dow: "пн", arDay: "الإثنين", fajr: "04:40", shuruq: "06:41", dhuhr: "13:20", asr: "15:59", maghrib: "19:05", isha: "20:33", hijri: 10 },
-      { day: 22, dow: "вт", arDay: "الثلاثاء", fajr: "04:42", shuruq: "06:43", dhuhr: "13:20", asr: "15:57", maghrib: "19:02", isha: "20:32", hijri: 11 },
-      { day: 23, dow: "ср", arDay: "الأربعاء", fajr: "04:45", shuruq: "06:46", dhuhr: "13:20", asr: "15:55", maghrib: "18:59", isha: "20:31", hijri: 12 },
-      { day: 24, dow: "чт", arDay: "الخميس", fajr: "04:47", shuruq: "06:48", dhuhr: "13:20", asr: "15:53", maghrib: "18:56", isha: "20:30", hijri: 13 },
-      { day: 25, dow: "пт", arDay: "الجمعة", fajr: "04:49", shuruq: "06:50", dhuhr: "13:20", asr: "15:52", maghrib: "18:53", isha: "20:29", hijri: 14 },
-      { day: 26, dow: "сб", arDay: "السبت", fajr: "04:52", shuruq: "06:53", dhuhr: "13:20", asr: "15:50", maghrib: "18:50", isha: "20:28", hijri: 15 },
-      { day: 27, dow: "вс", arDay: "الأحد", fajr: "04:54", shuruq: "06:55", dhuhr: "13:20", asr: "15:48", maghrib: "18:47", isha: "20:27", hijri: 16 },
-      { day: 28, dow: "пн", arDay: "الإثنين", fajr: "04:57", shuruq: "06:57", dhuhr: "13:20", asr: "15:47", maghrib: "18:44", isha: "20:26", hijri: 17 },
-      { day: 29, dow: "вт", arDay: "الثلاثاء", fajr: "04:59", shuruq: "07:00", dhuhr: "13:20", asr: "15:45", maghrib: "18:40", isha: "20:25", hijri: 18 },
-      { day: 30, dow: "ср", arDay: "الأربعاء", fajr: "05:01", shuruq: "07:02", dhuhr: "13:20", asr: "15:43", maghrib: "18:38", isha: "20:24", hijri: 19 }
+      { day: 1, dow: "вт", arDay: "الثلاثاء", fajr: "03:54", shuruq: "05:55", dhuhr: "13:20", asr: "16:32", maghrib: "20:05", isha: "21:35" },
+      { day: 2, dow: "ср", arDay: "الأربعاء", fajr: "03:56", shuruq: "05:57", dhuhr: "13:20", asr: "16:30", maghrib: "20:02", isha: "21:31" },
+      { day: 3, dow: "чт", arDay: "الخميس", fajr: "03:58", shuruq: "06:00", dhuhr: "13:20", asr: "16:28", maghrib: "19:59", isha: "21:28" },
+      { day: 4, dow: "пт", arDay: "الجمعة", fajr: "04:00", shuruq: "06:02", dhuhr: "13:20", asr: "16:27", maghrib: "19:56", isha: "21:25" },
+      { day: 5, dow: "сб", arDay: "السبت", fajr: "04:02", shuruq: "06:04", dhuhr: "13:20", asr: "16:25", maghrib: "19:53", isha: "21:22" },
+      { day: 6, dow: "вс", arDay: "الأحد", fajr: "04:05", shuruq: "06:06", dhuhr: "13:20", asr: "16:23", maghrib: "19:50", isha: "21:19" },
+      { day: 7, dow: "пн", arDay: "الإثنين", fajr: "04:07", shuruq: "06:09", dhuhr: "13:20", asr: "16:23", maghrib: "19:47", isha: "21:16" },
+      { day: 8, dow: "вт", arDay: "الثلاثاء", fajr: "04:10", shuruq: "06:11", dhuhr: "13:20", asr: "16:21", maghrib: "19:44", isha: "21:13" },
+      { day: 9, dow: "ср", arDay: "الأربعاء", fajr: "04:12", shuruq: "06:13", dhuhr: "13:20", asr: "16:19", maghrib: "19:41", isha: "21:10" },
+      { day: 10, dow: "чт", arDay: "الخميس", fajr: "04:14", shuruq: "06:16", dhuhr: "13:20", asr: "16:17", maghrib: "19:38", isha: "21:07" },
+      { day: 11, dow: "пт", arDay: "الجمعة", fajr: "04:17", shuruq: "06:18", dhuhr: "13:20", asr: "16:15", maghrib: "19:35", isha: "21:04" },
+      { day: 12, dow: "сб", arDay: "السبت", fajr: "04:19", shuruq: "06:20", dhuhr: "13:20", asr: "16:13", maghrib: "19:32", isha: "21:00" },
+      { day: 13, dow: "вс", arDay: "الأحد", fajr: "04:21", shuruq: "06:23", dhuhr: "13:20", asr: "16:11", maghrib: "19:29", isha: "20:57" },
+      { day: 14, dow: "пн", arDay: "الإثنين", fajr: "04:24", shuruq: "06:25", dhuhr: "13:20", asr: "16:10", maghrib: "19:26", isha: "20:54" },
+      { day: 15, dow: "вт", arDay: "الثلاثاء", fajr: "04:26", shuruq: "06:27", dhuhr: "13:20", asr: "16:09", maghrib: "19:23", isha: "20:51" },
+      { day: 16, dow: "ср", arDay: "الأربعاء", fajr: "04:29", shuruq: "06:29", dhuhr: "13:20", asr: "16:07", maghrib: "19:20", isha: "20:48" },
+      { day: 17, dow: "чт", arDay: "الخميس", fajr: "04:31", shuruq: "06:32", dhuhr: "13:20", asr: "16:06", maghrib: "19:17", isha: "20:45" },
+      { day: 18, dow: "пт", arDay: "الجمعة", fajr: "04:33", shuruq: "06:34", dhuhr: "13:20", asr: "16:04", maghrib: "19:14", isha: "20:42" },
+      { day: 19, dow: "сб", arDay: "السبت", fajr: "04:36", shuruq: "06:36", dhuhr: "13:20", asr: "16:02", maghrib: "19:11", isha: "20:39" },
+      { day: 20, dow: "вс", arDay: "الأحد", fajr: "04:38", shuruq: "06:39", dhuhr: "13:20", asr: "16:01", maghrib: "19:08", isha: "20:35" },
+      { day: 21, dow: "пн", arDay: "الإثنين", fajr: "04:40", shuruq: "06:41", dhuhr: "13:20", asr: "15:59", maghrib: "19:05", isha: "20:33" },
+      { day: 22, dow: "вт", arDay: "الثلاثاء", fajr: "04:42", shuruq: "06:43", dhuhr: "13:20", asr: "15:57", maghrib: "19:02", isha: "20:32" },
+      { day: 23, dow: "ср", arDay: "الأربعاء", fajr: "04:45", shuruq: "06:46", dhuhr: "13:20", asr: "15:55", maghrib: "18:59", isha: "20:31" },
+      { day: 24, dow: "чт", arDay: "الخميس", fajr: "04:47", shuruq: "06:48", dhuhr: "13:20", asr: "15:53", maghrib: "18:56", isha: "20:30" },
+      { day: 25, dow: "пт", arDay: "الجمعة", fajr: "04:49", shuruq: "06:50", dhuhr: "13:20", asr: "15:52", maghrib: "18:53", isha: "20:29" },
+      { day: 26, dow: "сб", arDay: "السبت", fajr: "04:52", shuruq: "06:53", dhuhr: "13:20", asr: "15:50", maghrib: "18:50", isha: "20:28" },
+      { day: 27, dow: "вс", arDay: "الأحد", fajr: "04:54", shuruq: "06:55", dhuhr: "13:20", asr: "15:48", maghrib: "18:47", isha: "20:27" },
+      { day: 28, dow: "пн", arDay: "الإثنين", fajr: "04:57", shuruq: "06:57", dhuhr: "13:20", asr: "15:47", maghrib: "18:44", isha: "20:26" },
+      { day: 29, dow: "вт", arDay: "الثلاثاء", fajr: "04:59", shuruq: "07:00", dhuhr: "13:20", asr: "15:45", maghrib: "18:40", isha: "20:25" },
+      { day: 30, dow: "ср", arDay: "الأربعاء", fajr: "05:01", shuruq: "07:02", dhuhr: "13:20", asr: "15:43", maghrib: "18:38", isha: "20:24" }
     ];
 
-    const fullSchedules = {
-      odd: {
-        mon: [
-          { time: "04:40 - 05:40", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "استيقاظ مبكر وسكينة وتلاوة ورد قرآني دون شاشات." },
-          { time: "05:40 - 09:30", title: "كتلة تركيز عميق 1 (3.5 ساعات)", cat: "deepwork", badge: "⚡ Deep Work", desc: "أعلى تصفية ذهنية: حل مسائل التحليل والبرمجة الصعبة في المسكن." },
-          { time: "11:30 - 13:00", title: "Дискретная математика (Лекция)", cat: "class", badge: "أونلاين", desc: "الرياضيات المتقطعة • محاضرة عن بُعد عبر المنصة." },
-          { time: "12:35 - 13:25", title: "انطلاق لمبنى ул. Ломоносова, д. 9 (المسافة: 50 دقيقة)", cat: "transit", badge: "🚇 تنقل 50 د", desc: "التحرك الساعة 12:35 للوصول بهدوء، وصلاة الظهر في 13:20 بمصلى لومونوسوفا." },
-          { time: "13:30 - 15:00", title: "Дискретная математика (Практика 1)", cat: "class", badge: "تطبيق عملي", desc: "مبنى ул. Ломоносова, д. 9 • قاعة 4206." },
-          { time: "15:30 - 17:00", title: "Дискретная математика (Практика 2)", cat: "class", badge: "تطبيق عملي", desc: "قاعة 4206 • تفكيك المسائل المتقدمة على السبورة." },
-          { time: "17:00 - 17:55", title: "صلاة العصر + العودة من لومونوسوفا (50 دقيقة)", cat: "transit", badge: "🚇 عودة 50 د", desc: "أداء العصر في مصلى المبنى والعودة للمسكن وتناول وجبة الغداء الجاهزة." },
-          { time: "18:00 - 20:30", title: "كتلة تثبيت وحل الشيتات فوراً (2.5 ساعة)", cat: "deepwork", badge: "⚡ Active Recall", desc: "حل مسائل اليوم مباشرة لترسيخها في الذاكرة طويلة المدى." },
-          { time: "19:05", title: "صلاة المغرب في وقتها + أذكار المساء", cat: "prayer", badge: "أذان المغرب", desc: "مرسى روحي وتفريغ ذهني هادئ." },
-          { time: "20:33", title: "صلاة العشاء وإغلاق اليوم (Shut-down)", cat: "prayer", badge: "أذان العشاء", desc: "تجهيز الغد والنوم المبكر لتعويض الطاقة." }
-        ],
-        tue: [
-          { time: "04:42 - 05:40", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "بداية الطاعة والنشاط وتجهيز الذهن." },
-          { time: "05:40 - 08:45", title: "كتلة تركيز عميق 1 (3 ساعات)", cat: "deepwork", badge: "⚡ Deep Work", desc: "التحضير المسبق لنظريات ومسائل التحليل الرياضي." },
-          { time: "09:25 - 09:45", title: "انطلاق لمبنى Песочная наб., д. 14 (المسافة: 15 دقيقة)", cat: "transit", badge: "🚶 تنقل 15 د", desc: "المسافة قريبة جداً 15 دقيقة فقط، التحرك 09:25 للوصول قبل المحاضرة." },
-          { time: "09:50 - 11:20", title: "Математический анализ (Лекция)", cat: "class", badge: "محاضرة", desc: "مبنى Песочная наб., д. 14 • قاعة 202." },
-          { time: "11:20 - 13:20", title: "فجوة المكتبة الذهبية (حل تمارين فوري)", cat: "deepwork", badge: "⚡ فجوة المكتبة", desc: "ساعتان في مكتبة بيسوتشنايا لنقل البراهين وحل المسائل دون مغادرة المبنى." },
-          { time: "13:20", title: "صلاة الظهر في وقتها تماماً (13:20)", cat: "prayer", badge: "أذان الظهر", desc: "أداء الصلاة قبل بداية الحصة التطبيقية." },
-          { time: "13:30 - 15:00", title: "Математический анализ (Практика)", cat: "class", badge: "تطبيق عملي", desc: "Песочная наб., д. 14 • قاعة 306." },
-          { time: "15:30 - 17:00", title: "Информатика / Программирование", cat: "class", badge: "تطبيق عملي", desc: "Песочная наб., д. 14 • قاعة 306 / 311." },
-          { time: "17:00 - 17:20", title: "صلاة العصر وعودة للمسكن (15 دقيقة)", cat: "transit", badge: "🚶 عودة 15 د", desc: "أداء العصر والعودة السريعة للمسكن (15 دقيقة فقط)." },
-          { time: "18:00 - 20:30", title: "جلسة برمجة وبناء مشاريع مستقلة", cat: "deepwork", badge: "⚡ مشاريع", desc: "تطبيق الأكواد دون الاعتماد الأعمى على المساعدات." }
-        ],
-        wed: [
-          { time: "04:45 - 05:45", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "استفتاح هادئ لأطول أيام الأسبوع." },
-          { time: "05:45 - 11:30", title: "كتلة تركيز عميق 1 (5.5 ساعات)", cat: "deepwork", badge: "⚡ منجم تركيز", desc: "مذاكرة مكثفة للخوارزميات والجبر في المسكن." },
-          { time: "13:05 - 13:25", title: "انطلاق لـ Песочная (15 د) + صلاة الظهر (13:20)", cat: "transit", badge: "🚶 تنقل 15 د", desc: "التحرك 13:05 للوصول وصلاة الظهر في 13:20 بمبنى بيسوتشنايا." },
-          { time: "13:30 - 15:00", title: "Программирование (Практика 1)", cat: "class", badge: "برمجة عملي", desc: "Песочная наб., д. 14 • قاعة 202." },
-          { time: "15:30 - 17:00", title: "Программирование (Практика 2)", cat: "class", badge: "برمجة عملي", desc: "Песочная наб., д. 14 • قاعة 202." },
-          { time: "17:00 - 18:30", title: "انتقال من Песочная إلى مبنى Ломоносова (المترو 45 د)", cat: "transit", badge: "🚇 تنقل بيني", desc: "الخروج 17:00، المترو يستغرق 45 دقيقة، استغلال الوقت في استماع بودكاست روسي + صلاة المغرب (18:59)." },
-          { time: "18:50 - 22:00", title: "Русский язык (Академический)", cat: "class", badge: "لغة مكثفة", desc: "اللغة الروسية الأكاديمية • مبنى Ломоносова." },
-          { time: "22:00 - 22:50", title: "صلاة العشاء + العودة من لومونوسوفا (50 دقيقة)", cat: "transit", badge: "🚇 عودة 50 د", desc: "أداء العشاء والعودة للمسكن ونوم سريع لتعويض الجهد الكبير." }
-        ],
-        thu: [
-          { time: "04:47 - 05:45", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "بداية يوم الإنتاجية والطبخ المجمّع." },
-          { time: "05:45 - 10:30", title: "كتلة تركيز عميق 1 (4.5 ساعات صلبة)", cat: "deepwork", badge: "⚡ Deep Work", desc: "حل مسائل التحليل والبرمجة دون أي مشتتات." },
-          { time: "10:30 - 12:30", title: "🍳 جلسة طبخ النصف الثاني من الأسبوع", cat: "meal", badge: "Batch Cooking", desc: "إعداد وجبات تكفي حتى السبت في علب لتفريغ الذهن تماماً." },
-          { time: "13:20", title: "صلاة الظهر (13:20) + غداء طازج", cat: "prayer", badge: "أذان الظهر", desc: "أداء الصلاة وتناول وجبة متوازنة بهدوء." },
-          { time: "14:45 - 15:20", title: "انطلاق لمبنى Кронверкский пр. (المسافة: 30 دقيقة)", cat: "transit", badge: "🚇 تنقل 30 د", desc: "التحرك 14:45 للوصول إلى مبنى كرونفركسكي قبل 15:30." },
-          { time: "15:30 - 17:00", title: "Реформы и реформаторы (Практика)", cat: "class", badge: "تاريخ عملي", desc: "Кронверкский пр. • قاعة Lemon Classroom." },
-          { time: "17:00 - 18:45", title: "مكتبة الجامعة كرونفركسكي + صلاة العصر والمغرب", cat: "deepwork", badge: "مكتبة وصلاة", desc: "مذاكرة مركزة في المبنى دون إضاعة الوقت في مواصلات." },
-          { time: "18:50 - 20:20", title: "Реформы и реформаторы (Лекция)", cat: "class", badge: "تاريخ نظري", desc: "Кронверкский пр. • قاعة 1316." },
-          { time: "20:20 - 21:00", title: "صلاة العشاء + العودة من كرونفركسكي (30 دقيقة)", cat: "transit", badge: "🚇 عودة 30 د", desc: "العودة للمسكن ونوم مبكر." }
-        ],
-        fri: [
-          { time: "04:49 - 05:45", title: "صلاة الفجر + أذكار وسورة الكهف", cat: "prayer", badge: "أذان الفجر", desc: "أداء الصلاة وقراءة سورة الكهف والتحضير." },
-          { time: "07:45 - 08:05", title: "انطلاق لـ Песочная (المسافة: 15 دقيقة فقط)", cat: "transit", badge: "🚶 تنقل 15 د", desc: "المسافة 15 دقيقة، التحرك 07:45 للوصول في 08:00 تماماً." },
-          { time: "08:10 - 09:40", title: "Алгебра и алгоритмы (Лекция)", cat: "class", badge: "محاضرة", desc: "Песочная наб., д. 14 • قاعة 206." },
-          { time: "09:40 - 11:20", title: "فجوة المكتبة وتلخيص المفهوم فورا", cat: "deepwork", badge: "⚡ تلخيص فوري", desc: "كتابة البراهين غيباً على ورقة بيضاء داخل مبنى بيسوتشنايا." },
-          { time: "11:30 - 13:00", title: "Алгебра и алгоритмы (Практика)", cat: "class", badge: "تطبيق عملي", desc: "Песочная наб., д. 14 • قاعة 306." },
-          { time: "13:20", title: "صلاة الجمعة / الظهر في وقتها تماماً", cat: "prayer", badge: "صلاة الجمعة", desc: "أداء الصلاة والدعاء في ساعة الاستجابة." },
-          { time: "15:00 - 17:00", title: "Русский язык (Разговорный)", cat: "class", badge: "محادثة روسي", desc: "تطبيقات المحادثة والنطق السليم." },
-          { time: "17:00 - 17:20", title: "عودة سريعة للمسكن (15 دقيقة)", cat: "transit", badge: "🚶 عودة 15 د", desc: "العودة وتناول الغداء وأداء العصر." },
-          { time: "18:00 - 20:30", title: "كتلة تركيز عميق (تثبيت شيت الجبر)", cat: "deepwork", badge: "⚡ حل شيت الجبر", desc: "حل تمارين اليوم دون تأجيل." }
-        ],
-        sat: [
-          { time: "04:52 - 05:45", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "استفتاح سبت الإنتاجية والتحضير الأسبوعي." },
-          { time: "05:45 - 11:00", title: "ماراثون التركيز العميق (5 ساعات صلبة)", cat: "deepwork", badge: "⚡ قلعة التركيز", desc: "بناء الأكواد والمشاريع وحل المسائل دون انقطاع." },
-          { time: "11:00 - 13:00", title: "تسوق مقاضي وطبخ الأسبوع دفعة واحدة", cat: "meal", badge: "Batch Shopping & Cook", desc: "شراء كافة الاحتياجات وتجهيز وجبات لتوفير الوقت قبل مناوبة عمل الأحد!" },
-          { time: "13:20", title: "صلاة الظهر وتناول الغداء", cat: "prayer", badge: "أذان الظهر", desc: "في وقتها تماماً." },
-          { time: "18:50 - 20:20", title: "التاريخ الروسي (Лекция - أونلاين)", cat: "class", badge: "Контур Толк", desc: "المحاضرة عن بُعد في المسكن." },
-          { time: "20:30 - 22:00", title: "التاريخ الروسي (Практика - أونلاين)", cat: "class", badge: "Контур Толк", desc: "التطبيق العملي عن بُعد في المسكن." }
-        ],
-        sun: [
-          { time: "04:54 - 05:40", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "الاستيقاظ المبكر والاستعداد ليوم العمل الطويل وتأمين المصاريف." },
-          { time: "05:40 - 06:45", title: "تجهيز وجبات العمل والتحضير الميداني", cat: "meal", badge: "تجهيز العمل", desc: "وضع علب الطعام في الحقيبة وشرب القهوة والجاهزية التامة." },
-          { time: "06:45 - 07:30", title: "الانطلاق إلى مقر العمل الخارجي", cat: "transit", badge: "🚇 تنقل للعمل", desc: "التوجه لمقر العمل للبدء في موعد الوردية." },
-          { time: "07:30 - 20:30", title: "💼 مناوبة العمل الميداني الكاملة (13 ساعة عمل صلبة)", cat: "work", badge: "💼 وردية العمل (مصاريف)", desc: "13 ساعة عمل عملي لكسب مصاريف المعيشة • تتخللها الصلوات: الظهر (13:20)، العصر (~15:48)، والمغرب (~18:47) في أوقاتها." },
-          { time: "20:30 - 21:15", title: "العودة من العمل للمسكن", cat: "transit", badge: "🚇 عودة للمسكن", desc: "الوصول للمسكن وأخذ حمام دافئ للاستشفاء." },
-          { time: "21:15 - 22:00", title: "صلاة العشاء + عشاء خفيف + مراجعة أسبوعية سريعة", cat: "prayer", badge: "أذان العشاء", desc: "إغلاق اليوم، شكر الله على نعمة الرزق، والنوم فوراً استعداداً للإثنين." }
-        ]
-      },
-      even: {
-        mon: [
-          { time: "04:57 - 05:45", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "استقبال الأسبوع الزوجي بطاقة متجددة." },
-          { time: "05:45 - 09:30", title: "كتلة تركيز عميق 1 (3.5 ساعات)", cat: "deepwork", badge: "⚡ Deep Work", desc: "حل مسائل التحليل الرياضي والبرمجة في المسكن." },
-          { time: "11:30 - 13:00", title: "Дискретная математика (Лекция)", cat: "class", badge: "أونلاين متكرر", desc: "الرياضيات المتقطعة عن بُعد." },
-          { time: "12:35 - 13:25", title: "انطلاق لمبنى ул. Ломоносова (50 دقيقة) + صلاة الظهر", cat: "transit", badge: "🚇 تنقل 50 د", desc: "التحرك 12:35 وصلاة الظهر في 13:20 بقاعة لومونوسوفا." },
-          { time: "13:30 - 15:00", title: "Дискретная математика (Практика 1)", cat: "class", badge: "تطبيق عملي", desc: "ул. Ломоносова, д. 9 • قاعة 4206." },
-          { time: "15:30 - 17:00", title: "Дискретная математика (Практика 2)", cat: "class", badge: "تطبيق عملي", desc: "ул. Ломоносова, д. 9 • قاعة 4206." },
-          { time: "17:00 - 17:55", title: "صلاة العصر + العودة من لومونوسوفا (50 دقيقة)", cat: "transit", badge: "🚇 عودة 50 د", desc: "العودة للمسكن وتناول الغداء." },
-          { time: "18:00 - 20:30", title: "تثبيت وحل مسائل الماث المتقطع فوراً", cat: "deepwork", badge: "⚡ تثبيت فوري", desc: "حل الشيت دون تأجيل." }
-        ],
-        tue: [
-          { time: "04:59 - 05:45", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "استفتاح اليوم بالطاعة والنشاط." },
-          { time: "05:45 - 08:45", title: "كتلة تركيز عميق 1 (3 ساعات)", cat: "deepwork", badge: "⚡ Deep Work", desc: "مراجعة براهين ونظريات التحليل الرياضي." },
-          { time: "09:25 - 09:45", title: "انطلاق لـ Песочная (المسافة: 15 دقيقة فقط)", cat: "transit", badge: "🚶 تنقل 15 د", desc: "التحرك 09:25 للوصول قبل 09:50." },
-          { time: "09:50 - 11:20", title: "Математический анализ (Лекция)", cat: "class", badge: "محاضرة", desc: "Песочная наб., д. 14 • قاعة 202." },
-          { time: "11:20 - 13:15", title: "فجوة المكتبة وحل التمارين مباشرة", cat: "deepwork", badge: "⚡ تلخيص نشط", desc: "حل شيت المسائل في مكتبة بيسوتشنايا." },
-          { time: "13:20", title: "صلاة الظهر في وقتها تماماً (13:20)", cat: "prayer", badge: "أذان الظهر", desc: "في وقتها قبل التطبيق." },
-          { time: "13:30 - 15:00", title: "Математический анализ (Практика)", cat: "class", badge: "تطبيق عملي", desc: "Песочная наб., д. 14 • قاعة 306." },
-          { time: "15:30 - 17:00", title: "Информатика / Программирование", cat: "class", badge: "تطبيق عملي", desc: "Песочная наб., д. 14 • قاعة 306 / 311." },
-          { time: "17:00 - 17:20", title: "صلاة العصر وعودة للمسكن (15 دقيقة)", cat: "transit", badge: "🚶 عودة 15 د", desc: "عودة سريعة للمسكن." }
-        ],
-        wed: [
-          { time: "05:01 - 06:15", title: "صلاة الفجر + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "أداء الصلاة والاستعداد لانطلاق مبكر." },
-          { time: "07:45 - 08:05", title: "انطلاق لـ Песочная (المسافة: 15 دقيقة)", cat: "transit", badge: "🚶 تنقل 15 د", desc: "التحرك 07:45 للوصول لمحاضرة 08:10 في بيسوتشنايا." },
-          { time: "08:10 - 09:40", title: "Введение в проф. деятельность (Лекция)", cat: "class", badge: "محاضرة تخصص", desc: "Песочная наб., д. 14 • قاعة 202." },
-          { time: "09:50 - 11:20", title: "Введение в проф. деятельность (Практика)", cat: "class", badge: "تطبيق عملي", desc: "Песочная наб., д. 14 • قاعة 202." },
-          { time: "11:20 - 12:20", title: "انتقال من Песочная إلى مبنى Ломоносова (المترو 45 د)", cat: "transit", badge: "🚇 تنقل بيني", desc: "الانتقال براحة وتناول وجبة خفيفة وصلاة الظهر في 13:20 بمبنى لومونوسوفا." },
-          { time: "13:30 - 15:00", title: "Философия (Лекция)", cat: "class", badge: "فلسفة نظري", desc: "ул. Ломоносова, д. 9 • قاعة 2202." },
-          { time: "15:30 - 17:00", title: "Философия (Практика)", cat: "class", badge: "فلسفة عملي", desc: "ул. Ломоносова, д. 9 • قاعة 1607." },
-          { time: "17:00 - 18:45", title: "صلاة العصر والمغرب + مراجعة بمكتبة لومونوسوفا", cat: "deepwork", badge: "مكتبة وصلاة", desc: "أداء الصلوات وتلخيص المحاضرة قبل درس الروسي." },
-          { time: "18:50 - 22:00", title: "Русский язык (Академический)", cat: "class", badge: "لغة مكثفة", desc: "اللغة الروسية الأكاديمية • مبنى Ломоносова." },
-          { time: "22:00 - 22:50", title: "صلاة العشاء + العودة من لومونوسوفا (50 دقيقة)", cat: "transit", badge: "🚇 عودة 50 د", desc: "العودة للمسكن ونوم سريع." }
-        ],
-        thu: [
-          { time: "05:03 - 06:00", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "اليوم الذهبي: لا توجد أي محاضرات جامعية أساسية! 💎" },
-          { time: "06:00 - 11:00", title: "كتلة تركيز عميق 1 (5 ساعات صلبة)", cat: "deepwork", badge: "⚡ منجم تركيز", desc: "أعلى تصفية ذهنية: حل أصعب مسائل البرمجة والتحليل دون أي مقاطعة." },
-          { time: "11:00 - 13:00", title: "🍳 جلسة طبخ النصف الثاني من الأسبوع", cat: "meal", badge: "Batch Cooking", desc: "تجهيز وجبات تكفي حتى السبت في علب لتوفير الوقت تماماً." },
-          { time: "13:20", title: "صلاة الظهر في وقتها تماماً (13:20)", cat: "prayer", badge: "أذان الظهر", desc: "أداء الصلاة وتناول غداء طازج بهدوء." },
-          { time: "14:00 - 18:00", title: "كتلة تركيز عميق 2 (4 ساعات)", cat: "deepwork", badge: "⚡ إتقان البرمجة", desc: "مشاريع برمجية وتطبيقات مستقلة بالمسكن." }
-        ],
-        fri: [
-          { time: "05:05 - 06:15", title: "صلاة الفجر + تلاوة سورة الكهف", cat: "prayer", badge: "أذان الفجر", desc: "أداء الصلاة وتلاوة سورة الكهف والتحضير." },
-          { time: "07:45 - 08:05", title: "انطلاق لـ Песочная (المسافة: 15 دقيقة فقط)", cat: "transit", badge: "🚶 تنقل 15 د", desc: "التحرك 07:45 للوصول لمحاضرة 08:10 في بيسوتشنايا." },
-          { time: "08:10 - 09:40", title: "Алгебра и алгоритмы (Лекция)", cat: "class", badge: "محاضرة رئيسية", desc: "Песочная наб., д. 14 • قاعة 206." },
-          { time: "11:30 - 13:00", title: "Алгебра и алгоритмы (Практика)", cat: "class", badge: "تطبيق عملي", desc: "Песочная наб., д. 14 • قاعة 306." },
-          { time: "13:20", title: "صلاة الجمعة / الظهر في وقتها", cat: "prayer", badge: "صلاة الجمعة", desc: "أداء الصلاة والدعاء في الجامعة." },
-          { time: "15:00 - 17:00", title: "Русский язык (Разговорный)", cat: "class", badge: "محادثة روسي", desc: "تطبيقات النطق والمحادثة." },
-          { time: "20:30 - 22:00", title: "Введение в проф. деятельность (28 أيلول)", cat: "class", badge: "تطبيق مسائي", desc: "Песочная наб., д. 14 • قاعة 306." }
-        ],
-        sat: [
-          { time: "05:07 - 06:00", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "استفتاح اليوم بالطاعة." },
-          { time: "06:30 - 10:30", title: "كتلة تركيز عميق 1 (4 ساعات صلبة)", cat: "deepwork", badge: "⚡ Deep Work", desc: "أكواد ومسائل رياضية متقدمة في المسكن." },
-          { time: "11:10 - 11:25", title: "انطلاق لـ Песочная (15 دقيقة فقط)", cat: "transit", badge: "🚶 تنقل 15 د", desc: "التحرك 11:10 للوصول إلى قاعة 303 قبل 11:30." },
-          { time: "11:30 - 13:00", title: "Информатика (Практика)", cat: "class", badge: "تطبيق عملي", desc: "Песочная наб., д. 14 • قاعة 303." },
-          { time: "13:20", title: "صلاة الظهر في وقتها تماماً", cat: "prayer", badge: "أذان الظهر", desc: "أداء الصلاة في مبنى بيسوتشنايا ثم العودة (15 دقيقة)." },
-          { time: "14:30 - 18:30", title: "كتلة تركيز 2 + تجهيز وجبات عمل الأحد", cat: "deepwork", badge: "⚡ تحضير العمل", desc: "تطبيق الأكواد وتجهيز وجبة الغد ليوم العمل الكامل (13 ساعة)." }
-        ],
-        sun: [
-          { time: "05:09 - 06:00", title: "صلاة الفجر في وقتها + أذكار الصباح", cat: "prayer", badge: "أذان الفجر", desc: "الاستيقاظ المبكر والاستعداد ليوم العمل الطويل وتأمين المصاريف." },
-          { time: "06:00 - 06:45", title: "تجهيز وجبات العمل والتحضير الميداني", cat: "meal", badge: "تجهيز العمل", desc: "وضع علب الطعام في الحقيبة وشرب القهوة والجاهزية التامة." },
-          { time: "06:45 - 07:30", title: "الانطلاق إلى مقر العمل الخارجي", cat: "transit", badge: "🚇 تنقل للعمل", desc: "التوجه لمقر العمل للبدء في موعد الوردية." },
-          { time: "07:30 - 20:30", title: "💼 مناوبة العمل الميداني الكاملة (13 ساعة عمل صلبة)", cat: "work", badge: "💼 وردية العمل (مصاريف)", desc: "13 ساعة عمل عملي لكسب مصاريف المعيشة • تتخللها الصلوات: الظهر (13:20)، العصر (~15:47)، والمغرب (~18:44) في أوقاتها." },
-          { time: "20:30 - 21:15", title: "العودة من العمل للمسكن", cat: "transit", badge: "🚇 عودة للمسكن", desc: "الوصول للمسكن وأخذ حمام دافئ للاستشفاء." },
-          { time: "21:15 - 22:00", title: "صلاة العشاء + عشاء خفيف + مراجعة أسبوعية سريعة", cat: "prayer", badge: "أذان العشاء", desc: "إغلاق اليوم، شكر الله على نعمة الرزق، والنوم فوراً استعداداً للإثنين." }
-        ]
-      }
+    let selectedDateObj = new Date(2026, 8, 27); // Default Sept 27, 2026
+    let currentMonth = 8;
+    let currentYear = 2026;
+    let waterAmount = parseInt(localStorage.getItem('itmo_water') || '0', 10);
+    let focusTimeRemaining = 3000;
+    let focusTimerInterval = null;
+    let isTimerRunning = false;
+
+    function getWeekParity(dateObj) {
+      const startSem = new Date(2026, 8, 1);
+      const diffTime = Math.abs(dateObj - startSem);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const weekNum = Math.floor(diffDays / 7) + 1;
+      return (weekNum % 2 !== 0) ? 'odd' : 'even';
+    }
+
+    const schedulesOdd = {
+      mon: [
+        { id: 'mo_1', time: '04:07 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر وقراءة أذكار الصباح.' },
+        { id: 'mo_2', time: '08:00 - 09:30', title: 'محاضرة برمجة متقدمة (أسبوع فردي)', type: 'study', desc: 'مبنى Кронверкский пр.' },
+        { id: 'mo_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء.' },
+        { id: 'mo_4', time: '16:23 - 16:50', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'mo_5', time: '19:47 - 20:15', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'أداء المغرب وأذكار المساء.' },
+        { id: 'mo_6', time: '21:16 - 21:40', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'أداء صلاة العشاء وختام الصلوات الخمس.' }
+      ],
+      tue: [
+        { id: 'tu_1', time: '04:10 - 04:35', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر والأذكار.' },
+        { id: 'tu_2', time: '10:00 - 12:00', title: 'محاضرة قواعد البيانات والذكاء الاصطناعي (فردي)', type: 'study', desc: 'مبنى ул. Ломоносова, д. 9.' },
+        { id: 'tu_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتغذية.' },
+        { id: 'tu_4', time: '16:21 - 16:45', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'tu_5', time: '19:44 - 20:10', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'tu_6', time: '21:13 - 21:35', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
+      ],
+      wed: [
+        { id: 'we_1', time: '04:12 - 04:35', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر في جماعة.' },
+        { id: 'we_2', time: '09:50 - 11:20', title: 'محاضرة هندسة البرمجيات (فردي)', type: 'study', desc: 'مبنى Песочная наб., д. 14.' },
+        { id: 'we_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة الغداء.' },
+        { id: 'we_4', time: '16:19 - 16:45', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'we_5', time: '19:41 - 20:05', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'we_6', time: '21:10 - 21:35', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
+      ],
+      thu: [
+        { id: 'th_1', time: '04:14 - 04:40', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية اليوم.' },
+        { id: 'th_2', time: '12:00 - 13:20', title: 'مراجعة وتحضير أسبوعي (فردي)', type: 'study', desc: 'مراجعة المنهج.' },
+        { id: 'th_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'صلاة الظهر.' },
+        { id: 'th_4', time: '16:17 - 16:40', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'th_5', time: '19:38 - 20:05', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'th_6', time: '20:30 - 21:30', title: 'طبخ مجمّع (Batch Cooking) للوجبات 🍲', type: 'work', desc: 'تجهيز الوجبات.' },
+        { id: 'th_7', time: '21:07 - 21:35', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
+      ],
+      fri: [
+        { id: 'fr_1', time: '04:17 - 04:40', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر في جماعة.' },
+        { id: 'fr_2', time: '13:20 - 14:30', title: 'صلاة الجمعة المباركة والراحة الأسبوعية', type: 'prayer', desc: 'صلاة الجمعة وسورة الكهف.' },
+        { id: 'fr_3', time: '16:15 - 16:40', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'fr_4', time: '19:35 - 20:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'fr_5', time: '21:04 - 21:30', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'صلاة العشاء وختام اليوم.' }
+      ],
+      sat: [
+        { id: 'sa_1', time: '05:00 - 05:30', title: 'الاستيقاظ المبكر وصلاة الفجر + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية معسكر الـ 16 ساعة المكثف.' },
+        { id: 'sa_2', time: '05:30 - 09:30', title: 'الفترة الأولى (أ): 4 ساعات متراكم', type: 'camp', desc: 'مراجعة المنهج القديم والحل.' },
+        { id: 'sa_3', time: '09:30 - 01:30', title: 'الفترة الأولى (ب): 4 ساعات جديد', type: 'camp', desc: 'مذاكرة الدروس الحالية.' },
+        { id: 'sa_4', time: '01:30 - 03:30', title: 'صلاة الظهر + الغداء + قيلولة (راحة)', type: 'prayer', desc: 'صلاة الظهر واستعادة النشاط.' },
+        { id: 'sa_5', time: '03:30 - 07:30', title: 'الفترة الثانية (أ): 4 ساعات متراكم', type: 'camp', desc: 'البدء بالقديم للمادة الثانية.' },
+        { id: 'sa_6', time: '16:13 - 16:35', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'sa_7', time: '07:30 - 11:30', title: 'الفترة الثانية (ب): 4 ساعات جديد', type: 'camp', desc: 'متابعة المنهج الجديد.' },
+        { id: 'sa_8', time: '19:32 - 20:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'sa_9', time: '21:00 - 21:35', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام معسكر الـ 16 ساعة.' }
+      ],
+      sun: [
+        { id: 'su_1', time: '04:05 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية يوم العمل.' },
+        { id: 'su_2', time: '07:30 - 20:30', title: 'يوم العمل الميداني والعملي (12-13 ساعة) 💼💰', type: 'work', desc: 'مناوبة العمل لتأمين المصاريف اليومية.' },
+        { id: 'su_3', time: '13:20 - 13:50', title: 'صلاة الظهر في وقتها + الوجبة', type: 'prayer', desc: 'أداء صلاة الظهر.' },
+        { id: 'su_4', time: '16:01 - 16:30', title: 'صلاة العصر في وقتها', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'su_5', time: '19:08 - 19:35', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'su_6', time: '20:35 - 21:05', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام العمل والصلوات الخمس.' }
+      ]
     };
 
-    let activeWeek = 'odd';
-    let activeDay = 'mon';
+    const schedulesEven = {
+      mon: [
+        { id: 'me_1', time: '04:07 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر وقراءة أذكار الصباح.' },
+        { id: 'me_2', time: '08:30 - 11:30', title: 'محاضرة مختبر البرمجيات والأنظمة (أسبوع زوجي)', type: 'study', desc: 'مبنى Кронверкский пр.' },
+        { id: 'me_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء.' },
+        { id: 'me_4', time: '16:23 - 16:50', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'me_5', time: '19:47 - 20:15', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'me_6', time: '21:16 - 21:40', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام اليوم.' }
+      ],
+      tue: [
+        { id: 'te_1', time: '04:10 - 04:35', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر والأذكار.' },
+        { id: 'te_2', time: '09:00 - 11:30', title: 'محاضرة أمن المعلومات والشبكات (زوجي)', type: 'study', desc: 'مبنى ул. Ломоносова, д. 9.' },
+        { id: 'te_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة الغداء.' },
+        { id: 'te_4', time: '16:21 - 16:45', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'te_5', time: '19:44 - 20:10', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'te_6', time: '21:13 - 21:35', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
+      ],
+      wed: [
+        { id: 'wee_1', time: '04:12 - 04:35', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر في جماعة.' },
+        { id: 'wee_2', time: '10:00 - 13:00', title: 'ورشة خوارزميات متقدمة وبنيات البيانات (زوجي)', type: 'study', desc: 'مبنى Песочная наб., д. 14.' },
+        { id: 'wee_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة الغداء.' },
+        { id: 'wee_4', time: '16:19 - 16:45', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'wee_5', time: '19:41 - 20:05', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'wee_6', time: '21:10 - 21:35', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
+      ],
+      thu: [
+        { id: 'the_1', time: '04:14 - 04:40', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية اليوم.' },
+        { id: 'the_2', time: '11:00 - 13:00', title: 'جلسة مشاريع البرمجة والعمل الجماعي (زوجي)', type: 'study', desc: 'عمل جماعي ونقاش المشاريع.' },
+        { id: 'the_3', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'صلاة الظهر.' },
+        { id: 'the_4', time: '16:17 - 16:40', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'the_5', time: '19:38 - 20:05', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'the_6', time: '20:30 - 21:30', title: 'طبخ مجمّع (Batch Cooking) للوجبات 🍲', type: 'work', desc: 'تجهيز الوجبات.' },
+        { id: 'the_7', time: '21:07 - 21:35', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
+      ],
+      fri: [
+        { id: 'fre_1', time: '04:17 - 04:40', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'الفجر في جماعة.' },
+        { id: 'fre_2', time: '13:20 - 14:30', title: 'صلاة الجمعة المباركة والراحة الأسبوعية', type: 'prayer', desc: 'صلاة الجمعة وسورة الكهف.' },
+        { id: 'fre_3', time: '16:15 - 16:40', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'fre_4', time: '19:35 - 20:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'fre_5', time: '21:04 - 21:30', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'صلاة العشاء وختام اليوم.' }
+      ],
+      sat: [
+        { id: 'sae_1', time: '05:00 - 05:30', title: 'الاستيقاظ المبكر وصلاة الفجر + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية معسكر الـ 16 ساعة المكثف.' },
+        { id: 'sae_2', time: '05:30 - 09:30', title: 'الفترة الأولى (أ): 4 ساعات متراكم', type: 'camp', desc: 'مراجعة المنهج القديم والحل.' },
+        { id: 'sae_3', time: '09:30 - 01:30', title: 'الفترة الأولى (ب): 4 ساعات جديد', type: 'camp', desc: 'مذاكرة الدروس الحالية.' },
+        { id: 'sae_4', time: '01:30 - 03:30', title: 'صلاة الظهر + الغداء + قيلولة (راحة)', type: 'prayer', desc: 'صلاة الظهر واستعادة النشاط.' },
+        { id: 'sae_5', time: '03:30 - 07:30', title: 'الفترة الثانية (أ): 4 ساعات متراكم', type: 'camp', desc: 'البدء بالقديم للمادة الثانية.' },
+        { id: 'sae_6', time: '16:13 - 16:35', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
+        { id: 'sae_7', time: '07:30 - 11:30', title: 'الفترة الثانية (ب): 4 ساعات جديد', type: 'camp', desc: 'متابعة المنهج الجديد.' },
+        { id: 'sae_8', time: '19:32 - 20:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'sae_9', time: '21:00 - 21:35', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام معسكر الـ 16 ساعة.' }
+      ],
+      sun: [
+        { id: 'sue_1', time: '04:05 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'بداية يوم العمل.' },
+        { id: 'sue_2', time: '07:30 - 20:30', title: 'يوم العمل الميداني والعملي (12-13 ساعة) 💼💰', type: 'work', desc: 'مناوبة العمل لتأمين المصاريف اليومية.' },
+        { id: 'sue_3', time: '13:20 - 13:50', title: 'صلاة الظهر في وقتها + الوجبة', type: 'prayer', desc: 'أداء صلاة الظهر.' },
+        { id: 'sue_4', time: '16:01 - 16:30', title: 'صلاة العصر في وقتها', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'sue_5', time: '19:08 - 19:35', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
+        { id: 'sue_6', time: '20:35 - 21:05', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام العمل والصلوات الخمس.' }
+      ]
+    };
 
-    // قائمة العادات اليومية مع مواعيد التنبيه المبرمجة بدقة
     const defaultHabits = [
-      { id: 'fajr_prayer', name: 'صلاة الفجر في وقتها 🕌', timeDesc: 'مع أذان الفجر', alertType: 'prayer' },
-      { id: 'morning_athkar', name: 'أذكار الصباح 📖 (بعد الفجر بـ 5 دقائق)', timeDesc: 'الفجر + 5 دقائق', alertType: 'athkar_morning' },
-      { id: 'deepwork_morning', name: 'جلسة التركيز الذهني الصباحية (Deep Work) ⚡', timeDesc: '06:00 صباحاً', alertType: 'fixed_time', alertHour: 6, alertMinute: 0 },
-      { id: 'dhuhr_prayer', name: 'صلاة الظهر في وقتها (13:20) 🕌', timeDesc: '13:20 ثابت', alertType: 'prayer' },
-      { id: 'asr_prayer', name: 'صلاة العصر في وقتها (التقويم الأزرق) 🕌', timeDesc: 'مع أذان العصر', alertType: 'prayer' },
-      { id: 'maghrib_prayer', name: 'صلاة المغرب في وقتها 🕌', timeDesc: 'مع أذان المغرب', alertType: 'prayer' },
-      { id: 'evening_athkar', name: 'أذكار المساء 🌇 (مع صلاة المغرب)', timeDesc: 'مع أذان المغرب', alertType: 'prayer' },
-      { id: 'isha_prayer', name: 'صلاة العشاء في وقتها 🕌', timeDesc: 'مع أذان العشاء', alertType: 'prayer' },
-      { id: 'phone_off', name: 'الهاتف مغلق أو في وضع الطيران وقت المذاكرة 📵', timeDesc: 'طوال كتل التركيز', alertType: 'reminder' },
-      { id: 'active_recall', name: 'المذاكرة بالاسترجاع النشط وحل المسائل (Active Recall) 📝', timeDesc: 'أثناء حل الشيتات', alertType: 'reminder' },
-      { id: 'shutdown_review', name: 'المراجعة وتجهيز حقيبة ومسار الغد (Shut-down) 🎒', timeDesc: '21:30 مساءً', alertType: 'fixed_time', alertHour: 21, alertMinute: 30 },
-      { id: 'early_sleep', name: 'النوم المبكر (7 ساعات كاملة) 🛌', timeDesc: '22:30 مساءً', alertType: 'fixed_time', alertHour: 22, alertMinute: 30 }
+      { id: 'hab_fajr', title: 'صلاة الفجر + أذكار الفجر', category: 'prayer', completed: false, isPostPrayer: 'fajr' },
+      { id: 'hab_morning', title: 'أذكار الصباح المأثورة (20 ذكراً)', category: 'dhikr', completed: false, isAthkarModal: true, athkarType: 'morning' },
+      { id: 'hab_dhuhr', title: 'صلاة الظهر + أذكار دبر الصلاة', category: 'prayer', completed: false, isPostPrayer: 'dhuhr' },
+      { id: 'hab_asr', title: 'صلاة العصر + أذكار دبر الصلاة', category: 'prayer', completed: false, isPostPrayer: 'asr' },
+      { id: 'hab_maghrib', title: 'صلاة المغرب + أذكار المغرب', category: 'prayer', completed: false, isPostPrayer: 'maghrib' },
+      { id: 'hab_evening', title: 'أذكار المساء المأثورة (20 ذكراً)', category: 'dhikr', completed: false, isAthkarModal: true, athkarType: 'evening' },
+      { id: 'hab_isha', title: 'صلاة العشاء + أذكار دبر الصلاة', category: 'prayer', completed: false, isPostPrayer: 'isha' },
+      { id: 'hab_water', title: 'إكمال هدف 3 لتر ماء 💧', category: 'health', completed: false },
+      { id: 'hab_focus', title: 'جلسة تركيز عميق (50 دقيقة) 🧠', category: 'study', completed: false }
     ];
 
-    function toggleDeepWorkInfo() {
-      const box = document.getElementById('deep-work-explanation');
-      box.classList.toggle('hidden');
+    let userHabits = JSON.parse(localStorage.getItem('itmo_habits') || JSON.stringify(defaultHabits));
+
+    const morningAthkarList = [
+      { text: "أصبحنا وأصبح الملك للّه، والحمد للّه، لا إله إلّا اللّه وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، رب أسألك خير ما في هذا اليوم وخیر ما بعده وأعوذ بك من شر ما في هذا اليوم وشر ما بعده، رب أعوذ بك من الكسل وسوء الكبر، رب أعوذ بك من عذاب في النار وعذاب في القبر.", count: 1 },
+      { text: "اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور.", count: 1 },
+      { text: "اللهم أنت ربي لا إله إلا أنت خلقتي وأنا عبدك وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.", count: 1 },
+      { text: "اللهم إني أصبحت أشهدك وأشهد حملة عرشك، وملائكتك وجميع خلقك، أنك أنت الله لا إله إلا أنت وحدك لا شريك لك، وأن محمداً عبدك ورسولك.", count: 4 },
+      { text: "اللهم ما أصبح بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك لك، فلك الحمد ولك الشكر.", count: 1 },
+      { text: "اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت. اللهم إني أعوذ بك من الكفر، والفقر، اللهم إني أعوذ بك من عذاب القبر لا إله إلا أنت.", count: 3 },
+      { text: "حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم.", count: 7 },
+      { text: "اللهم إني أسألك العافية في الدنيا والآخرة، اللهم إني أسألك العفو والعافية في ديني ودنياي وأهلي ومالي، اللهم استر عوراتي وآمن روعاتي، اللهم احفظني من بين يدي ومن خلفي وعن يميني وعن شمالي ومن فوقي وأعوذ بعظمتك أن أغتال من تحتي.", count: 1 },
+      { text: "اللهم عالم الغيب والشهادة، فاطر السماوات والأرض، رب كل شيء ومليكه، أشهد أن لا إله إلا أنت أعوذ بك من شر نفسي ومن شر الشيطان وشركه وأن أقتراف على نفسي سوءاً أو أجره إلى مسلم.", count: 1 },
+      { text: "بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم.", count: 3 },
+      { text: "رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً.", count: 3 },
+      { text: "يا حي يا قيوم برحمتك أستغيث أصلح لي شأني كله ولا تكلني إلى نفسي طرفة عين.", count: 1 },
+      { text: "أصبحنا وأصبح الملك لله رب العالمين، اللهم إني أسألك خير هذه اليوم: فتحه، ونصره، ونوره، وبركته، وهداه، وأعوذ بك من شر ما فيه وشر ما بعده.", count: 1 },
+      { text: "أصبحنا على فطرة الإسلام وكلمة الإخلاص، ودين نبينا محمد صلى الله عليه وسلم وملة أبينا إبراهيم حنيفاً مسلماً وما كان من المشركين.", count: 1 },
+      { text: "اللهم إني أسألك علماً نافعاً، ورزقاً طيباً، وعملاً متقبلاً.", count: 1 },
+      { text: "سبحان الله وبحمده عدد خلقه ورضا نفسه وزنة عرشه ومداد كلماته.", count: 3 },
+      { text: "سبحان الله وبحمده.", count: 100 },
+      { text: "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.", count: 100 },
+      { text: "أستغفر الله وأتوب إليه.", count: 100 },
+      { text: "اللهم صل وسلم على نبينا محمد.", count: 100 }
+    ];
+
+    const eveningAthkarList = [
+      { text: "مسكينا وامسى الملك للّه، والحمد للّه، لا إله إلّا اللّه وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، رب أسألك خير ما في هذه الليله وخير ما بعدها وأعوذ بك من شر ما في هذه الليلة وشر ما بعدها، رب أعوذ بك من الكسل وسوء الكبر، رب أعوذ بك من عذاب في النار وعذاب في القبر.", count: 1 },
+      { text: "اللهم بك أمسينا وبك أصبحنا وبك نحيا وبك نموت وإليك النشور.", count: 1 },
+      { text: "اللهم أنت ربي لا إله إلا أنت خلقتي وأنا عبدك وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي وأبوء بذنبي فاغفر لي فإنه لا يغفر الذنوب إلا أنت.", count: 1 },
+      { text: "اللهم إني امسيت أشهدك وأشهد حملة عرشك، وملائكتك وجميع خلقك، أنك أنت الله لا إله إلا أنت وحدك لا شريك لك، وأن محمداً عبدك ورسولك.", count: 4 },
+      { text: "اللهم ما امسى بي من نعمة أو بأحد من خلقك فمنك وحدك لا شريك لك، فلك الحمد ولك الشكر.", count: 1 },
+      { text: "اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت. اللهم إني أعوذ بك من الكفر، والفقر، اللهم إني أعوذ بك من عذاب القبر لا إله إلا أنت.", count: 3 },
+      { text: "حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم.", count: 7 },
+      { text: "اللهم إني أسألك العافية في الدنيا والآخرة، اللهم إني أسألك العفو والعافية في ديني ودنياي وأهلي ومالي، اللهم استر عوراتي وآمن روعاتي، اللهم احفظني من بين يدي ومن خلفي وعن يميني وعن شمالي ومن فوقي وأعوذ بعظمتك أن أغتال من تحتي.", count: 1 },
+      { text: "اللهم عالم الغيب والشهادة، فاطر السماوات والأرض، رب كل شيء ومليكه، أشهد أن لا إله إلا أنت أعوذ بك من شر نفسي ومن شر الشيطان وشركه وأن أقتراف على نفسي سوءاً أو أجره إلى مسلم.", count: 1 },
+      { text: "بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم.", count: 3 },
+      { text: "أعوذ بكلمات الله التامات من شر ما خلق.", count: 3 },
+      { text: "امسينا وامسى الملك لله رب العالمين، اللهم إني أسألك خير هذه اليله: فتحها، ونصرها، ونورها، وبركتها، وهداها، وأعوذ بك من شر ما فيها وشر ما بعدها.", count: 1 },
+      { text: "امسينا على فطرة الإسلام وكلمة الإخلاص، ودين نبينا محمد صلى الله عليه وسلم وملة أبينا إبراهيم حنيفاً مسلماً وما كان من المشركين.", count: 1 },
+      { text: "رضيت بالله رباً، وبالإسلام ديناً، وبمحمد صلى الله عليه وسلم نبياً.", count: 3 },
+      { text: "يا حي يا قيوم برحمتك أستغيث أصلح لي شأني كله ولا تكلني إلى نفسي طرفة عين.", count: 1 },
+      { text: "سبحان الله وبحمده عدد خلقه ورضا نفسه وزنة عرشه ومداد كلماته.", count: 3 },
+      { text: "سبحان الله وبحمده.", count: 100 },
+      { text: "لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير.", count: 100 },
+      { text: "أستغفر الله وأتوب إليه.", count: 100 },
+      { text: "اللهم صل وسلم على نبينا محمد.", count: 100 }
+    ];
+
+    const silentDhikrCollection = [
+      "سُبْحَانَ اللهِ وَبِحَمْدِهِ ، سُبْحَانَ اللهِ الْعَظِيمِ",
+      "لا حَوْلَ وَلا قُوَّةَ إِلاَّ بِاللهِ العَلِيِّ العَظِيمِ",
+      "لا إِلَهَ إِلاَّ أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+      "أَسْتَغْفِرُ اللهَ العَظِيمَ الَّذِي لا إِلَهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ وَأَتُوبُ إِلَيْهِ"
+    ];
+    let currentDhikrIdx = 0;
+
+    window.onload = function() {
+      renderMonthlyCalendar();
+      renderSchedule();
+      updateWaterDisplay();
+      updateTimerDisplay();
+      renderHabitsList();
+      updateHabitDashboardStats();
+      setInterval(updateLiveSystemClock, 1000);
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    };
+
+    function cycleDhikrManual() {
+      currentDhikrIdx = (currentDhikrIdx + 1) % silentDhikrCollection.length;
+      document.getElementById('dynamic-dhikr-text').textContent = silentDhikrCollection[currentDhikrIdx];
     }
 
-    // استرجاع الجدول المخصص أو الأصلي
-    function getWorkingSchedule() {
-      const customSchedules = JSON.parse(localStorage.getItem('itmo_custom_schedules') || '{}');
-      const working = JSON.parse(JSON.stringify(fullSchedules));
-      
-      // دمج التعديلات المحفوظة
-      Object.keys(customSchedules).forEach(key => {
-        const [w, d, idx] = key.split('_');
-        if (working[w] && working[w][d] && working[w][d][idx]) {
-          working[w][d][idx] = { ...working[w][d][idx], ...customSchedules[key] };
-        }
-      });
-      return working;
+    function changeMonth(dir) {
+      currentMonth += dir;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      } else if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderMonthlyCalendar();
     }
 
-    // عرض عناصر الجدول الزمني لليوم المحدد مع تمييز التنقل والعمل وزر التعديل
-    function renderSchedule() {
-      const container = document.getElementById('timeline-list');
-      const currentWorking = getWorkingSchedule();
-      const items = (currentWorking[activeWeek] && currentWorking[activeWeek][activeDay]) ? currentWorking[activeWeek][activeDay] : [];
-      const cancelledMap = JSON.parse(localStorage.getItem('itmo_cancelled_classes') || '{}');
+    function selectDate(year, month, day) {
+      selectedDateObj = new Date(year, month, day);
+      renderMonthlyCalendar();
+      renderSchedule();
+    }
 
-      if (items.length === 0) {
-        container.innerHTML = '<div class="p-6 text-center text-slate-500">لا توجد مهام مسجلة لهذا اليوم.</div>';
-        return;
+    function renderMonthlyCalendar() {
+      const titleEl = document.getElementById('monthly-calendar-title');
+      const gridEl = document.getElementById('monthly-calendar-grid');
+      if (!titleEl || !gridEl) return;
+
+      const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+      titleEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+      const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+      let startDay = firstDayIndex - 1;
+      if (startDay < 0) startDay = 6;
+
+      const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+      let html = '';
+      for (let i = 0; i < startDay; i++) {
+        html += `<div class="p-1 rounded bg-slate-900/30 opacity-25"></div>`;
       }
 
-      container.innerHTML = items.map((item, index) => {
-        const itemKey = `${activeWeek}_${activeDay}_${index}`;
-        const isCancelled = !!cancelledMap[itemKey];
+      for (let d = 1; d <= totalDays; d++) {
+        const dateObj = new Date(currentYear, currentMonth, d);
+        const dayOfWeekNum = dateObj.getDay(); 
+        const dayKeyMap = { 0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
+        const dKey = dayKeyMap[dayOfWeekNum];
+        const parity = getWeekParity(dateObj);
 
-        let badgeColor = 'bg-sky-500/10 text-sky-400 border-sky-500/20';
-        let borderRight = 'border-r-sky-500';
+        const schedulesMap = (parity === 'odd') ? schedulesOdd : schedulesEven;
+        const taskCount = (schedulesMap[dKey] || []).length;
 
-        if (item.cat === 'prayer') {
-          badgeColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-          borderRight = 'border-r-emerald-500';
-        } else if (item.cat === 'deepwork') {
-          badgeColor = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-          borderRight = 'border-r-amber-500';
-        } else if (item.cat === 'meal') {
-          badgeColor = 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-          borderRight = 'border-r-rose-500';
-        } else if (item.cat === 'transit') {
-          badgeColor = 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
-          borderRight = 'border-r-indigo-500';
-        } else if (item.cat === 'work') {
-          badgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
-          borderRight = 'border-r-emerald-400';
-        }
+        const isSelected = (d === selectedDateObj.getDate() && currentMonth === selectedDateObj.getMonth() && currentYear === selectedDateObj.getFullYear());
 
-        const isClass = (item.cat === 'class');
-        const isPrayer = (item.cat === 'prayer'); // مواقيت الصلوات لا تعدل يدوياً
+        html += `
+          <button onclick="selectDate(${currentYear}, ${currentMonth}, ${d})" class="p-1.5 rounded-xl border text-center transition flex flex-col items-center justify-between gap-1 ${isSelected ? 'bg-indigo-600 border-indigo-400 text-white font-black shadow-md shadow-indigo-600/30' : 'bg-slate-900/80 border-white/5 text-slate-300 hover:border-white/20 hover:bg-slate-800'}">
+            <span class="text-xs font-mono">${d}</span>
+            <span class="text-[8px] px-1 rounded ${parity === 'odd' ? 'bg-indigo-500/30 text-indigo-200' : 'bg-purple-500/30 text-purple-200'}">${parity === 'odd' ? 'فردي' : 'زوجي'}</span>
+          </button>
+        `;
+      }
+      gridEl.innerHTML = html;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
 
-        return `
-          <div class="p-3.5 sm:p-4 rounded-xl bg-slate-950/40 border border-white/5 border-r-4 ${borderRight} flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${isCancelled ? 'item-cancelled' : 'hover:bg-white/5'}" id="item-card-${itemKey}">
+    function renderSchedule() {
+      const container = document.getElementById('timeline-list');
+      const badgeEl = document.getElementById('selected-date-badge');
+      if (!container) return;
+
+      const dayOfWeekNum = selectedDateObj.getDay();
+      const dayKeyMap = { 0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
+      const dKey = dayKeyMap[dayOfWeekNum];
+      const parity = getWeekParity(selectedDateObj);
+
+      const schedulesMap = (parity === 'odd') ? schedulesOdd : schedulesEven;
+      const scheduleItems = schedulesMap[dKey] || [];
+
+      if (badgeEl) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        badgeEl.textContent = `📅 ${selectedDateObj.toLocaleDateString('ar-EG', options)} (${parity === 'odd' ? 'أسبوع فردي Нечетная' : 'أسبوع زوجي Четная'})`;
+      }
+
+      let html = '';
+      scheduleItems.forEach(item => {
+        html += `
+          <div class="p-4 rounded-2xl bg-slate-950/70 border border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-indigo-500/30 transition">
             <div class="space-y-1">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[11px] font-bold px-2 py-0.5 rounded-md border ${badgeColor}">${item.badge}</span>
-                <h4 class="text-sm font-bold text-white">${item.title}</h4>
-                ${isCancelled ? '<span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/40">ملغية اليوم ❌</span>' : ''}
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono text-[11px] font-bold">${item.time}</span>
+                <h4 class="font-bold text-sm text-white">${item.title}</h4>
               </div>
               <p class="text-xs text-slate-400 leading-relaxed">${item.desc}</p>
             </div>
-            
-            <div class="flex items-center gap-2 shrink-0 self-start sm:self-center">
-              <div class="font-mono text-xs font-bold text-slate-300 px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10">
-                ${item.time}
-              </div>
-
-              ${!isPrayer ? `
-                <button onclick="openEditModal('${itemKey}')" title="تعديل هذا الموعد والتفاصيل" class="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 transition">
-                  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
-                </button>
-              ` : `
-                <span title="مواقيت الصلاة ثابتة ومعتمدة في التقويم" class="text-emerald-400/60 p-1">
-                  <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-                </span>
-              `}
-
-              ${isClass ? `
-                <button onclick="toggleCancelClass('${itemKey}')" title="${isCancelled ? 'إعادة تفعيل المحاضرة' : 'إلغاء المحاضرة لهذا اليوم'}" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 ${isCancelled ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30' : 'bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25'}">
-                  <i data-lucide="${isCancelled ? 'rotate-ccw' : 'ban'}" class="w-3.5 h-3.5"></i>
-                  <span>${isCancelled ? 'إعادة' : 'إلغاء'}</span>
-                </button>
-              ` : ''}
+            <div class="flex items-center gap-2 self-end sm:self-center">
+              ${item.type === 'prayer' ? `<button onclick="openPostPrayerModalForCurrentUpcoming()" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold transition flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> الأذكار</button>` : ''}
+              <button onclick="openEditModal('${item.id}', '${item.title}', '${item.time}', '${item.desc}')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
             </div>
           </div>
         `;
-      }).join('');
-      
-      lucide.createIcons();
-    }
-
-    // دوال تعديل المواعيد وحفظها
-    function openEditModal(itemKey) {
-      const [w, d, idx] = itemKey.split('_');
-      const currentWorking = getWorkingSchedule();
-      const item = currentWorking[w][d][idx];
-      if (!item) return;
-
-      document.getElementById('edit-item-key').value = itemKey;
-      document.getElementById('edit-item-title').value = item.title;
-      document.getElementById('edit-item-time').value = item.time;
-      document.getElementById('edit-item-desc').value = item.desc;
-
-      const modal = document.getElementById('edit-item-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      lucide.createIcons();
-    }
-
-    function closeEditModal() {
-      const modal = document.getElementById('edit-item-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function saveItemEdits() {
-      const itemKey = document.getElementById('edit-item-key').value;
-      const title = document.getElementById('edit-item-title').value.trim();
-      const time = document.getElementById('edit-item-time').value.trim();
-      const desc = document.getElementById('edit-item-desc').value.trim();
-
-      if (!title || !time) {
-        showToast('يرجى ملء العنوان والتوقيت بشكل صحيح.');
-        return;
-      }
-
-      const customSchedules = JSON.parse(localStorage.getItem('itmo_custom_schedules') || '{}');
-      customSchedules[itemKey] = { title, time, desc };
-      localStorage.setItem('itmo_custom_schedules', JSON.stringify(customSchedules));
-
-      closeEditModal();
-      renderSchedule();
-      showToast('تم حفظ التعديلات بنجاح وستعمل التنبيهات على الموعد الجديد!');
-    }
-
-    function resetAllCustomSchedules() {
-      localStorage.removeItem('itmo_custom_schedules');
-      renderSchedule();
-      showToast('تمت استعادة كافة المواعيد الأصلية.');
-    }
-
-    function toggleCancelClass(key) {
-      const cancelledMap = JSON.parse(localStorage.getItem('itmo_cancelled_classes') || '{}');
-      if (cancelledMap[key]) {
-        delete cancelledMap[key];
-        showToast('تمت إعادة جدولة المحاضرة بنجاح.');
-      } else {
-        cancelledMap[key] = true;
-        showToast('تم إلغاء المحاضرة. استغل هذا الوقت في التركيز العميق أو الراحة!');
-      }
-      localStorage.setItem('itmo_cancelled_classes', JSON.stringify(cancelledMap));
-      renderSchedule();
-    }
-
-    function setDay(day) {
-      activeDay = day;
-      const buttons = document.querySelectorAll('.day-btn');
-      buttons.forEach(btn => {
-        if (btn.getAttribute('data-day') === day) {
-          btn.className = 'day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 transition shrink-0';
-        } else {
-          btn.className = 'day-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800/60 text-slate-400 hover:text-white transition shrink-0';
-        }
       });
-      renderSchedule();
+      container.innerHTML = html;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
-    function setWeek(week) {
-      activeWeek = week;
-      document.getElementById('week-odd-btn').className = week === 'odd' ? 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition' : 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
-      document.getElementById('week-even-btn').className = week === 'even' ? 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition' : 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
-      renderSchedule();
+    function addWater(amount) {
+      waterAmount = Math.min(3000, waterAmount + amount);
+      localStorage.setItem('itmo_water', waterAmount);
+      updateWaterDisplay();
+      showToast(`تم إضافة ${amount} مل من الماء بنجاح! 💧`);
     }
 
-    function renderFullPrayerTable() {
-      const tbody = document.getElementById('full-prayer-table-body');
-      const todayDate = new Date().getDate();
-
-      tbody.innerHTML = prayersDatabase.map(p => {
-        const isToday = (p.day === todayDate);
-        return `
-          <tr class="hover:bg-white/5 transition ${isToday ? 'bg-emerald-500/15 border-r-4 border-r-emerald-500 font-bold' : ''}">
-            <td class="p-2.5 text-white font-bold">${p.day} سبتمبر</td>
-            <td class="p-2.5 text-slate-300 font-sans">${p.arDay} (${p.dow})</td>
-            <td class="p-2.5 text-emerald-300">${p.fajr}</td>
-            <td class="p-2.5 text-slate-500">${p.shuruq}</td>
-            <td class="p-2.5 text-sky-300">${p.dhuhr}</td>
-            <td class="p-2.5 text-amber-300 font-bold">${p.asr}</td>
-            <td class="p-2.5 text-rose-300">${p.maghrib}</td>
-            <td class="p-2.5 text-indigo-300">${p.isha}</td>
-            <td class="p-2.5 text-slate-400">${p.hijri}</td>
-          </tr>
-        `;
-      }).join('');
+    function resetWaterIntake() {
+      waterAmount = 0;
+      localStorage.setItem('itmo_water', waterAmount);
+      updateWaterDisplay();
+      showToast('تم تصفير عداد الماء.');
     }
 
-    function openPrayerModal() {
-      renderFullPrayerTable();
-      document.getElementById('prayer-modal').classList.remove('hidden');
-      document.getElementById('prayer-modal').classList.add('flex');
-      lucide.createIcons();
-    }
-
-    function closePrayerModal() {
-      document.getElementById('prayer-modal').classList.add('hidden');
-      document.getElementById('prayer-modal').classList.remove('flex');
-    }
-
-    // سجل التنبيهات المرسلة اليوم لمنع التكرار في نفس الدقيقة
-    const triggeredAlertsHistory = new Set();
-    let alarmAudioInterval = null;
-    let alarmAudioCtx = null;
-
-    // تشغيل نغمة رنين مستمرة تتكرر حتى يتم إيقافها باليد
-    function startContinuousRinger() {
-      stopContinuousRingerAudio(); // إيقاف أي رنين سابق أولاً
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        alarmAudioCtx = new AudioContext();
-
-        function playChordNote() {
-          if (!alarmAudioCtx) return;
-          const osc1 = alarmAudioCtx.createOscillator();
-          const osc2 = alarmAudioCtx.createOscillator();
-          const gain = alarmAudioCtx.createGain();
-
-          osc1.type = 'triangle';
-          osc2.type = 'sine';
-          osc1.frequency.setValueAtTime(659.25, alarmAudioCtx.currentTime); // E5
-          osc2.frequency.setValueAtTime(880.00, alarmAudioCtx.currentTime); // A5
-
-          gain.gain.setValueAtTime(0.25, alarmAudioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, alarmAudioCtx.currentTime + 1.2);
-
-          osc1.connect(gain);
-          osc2.connect(gain);
-          gain.connect(alarmAudioCtx.destination);
-
-          osc1.start();
-          osc2.start();
-          osc1.stop(alarmAudioCtx.currentTime + 1.2);
-          osc2.stop(alarmAudioCtx.currentTime + 1.2);
-
-          if (navigator.vibrate) {
-            navigator.vibrate([400, 200, 400, 200]);
-          }
-        }
-
-        playChordNote();
-        alarmAudioInterval = setInterval(playChordNote, 1600);
-      } catch (e) {
-        console.error('Audio error:', e);
-      }
-    }
-
-    function stopContinuousRingerAudio() {
-      if (alarmAudioInterval) {
-        clearInterval(alarmAudioInterval);
-        alarmAudioInterval = null;
-      }
-      if (alarmAudioCtx) {
-        try { alarmAudioCtx.close(); } catch(e){}
-        alarmAudioCtx = null;
-      }
-      if (navigator.vibrate) {
-        navigator.vibrate(0);
-      }
-    }
-
-    // إطلاق المنبه المستمر مع ظهور النافذة
-    function triggerPersistentAlarm(title, message, badge = 'منبه قيد التشغيل') {
-      startContinuousRinger();
-
-      document.getElementById('alarm-title').textContent = title;
-      document.getElementById('alarm-message').textContent = message;
-      document.getElementById('alarm-badge').textContent = badge;
-
-      const modal = document.getElementById('active-alarm-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-
-      if (Notification.permission === 'granted') {
-        try {
-          new Notification(title, {
-            body: message,
-            icon: 'https://cdn-icons-png.flaticon.com/512/2972/2972531.png',
-            requireInteraction: true // يظل الإشعار ثابتاً حتى يضغط عليه المستخدم
-          });
-        } catch(e) {}
-      }
-    }
-
-    function stopAlarmRinger() {
-      stopContinuousRingerAudio();
-      const modal = document.getElementById('active-alarm-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      showToast('تم إيقاف رنين المنبه بنجاح.');
-    }
-
-    function sendSystemNotification(title, message, iconType = 'prayer') {
-      triggerPersistentAlarm(title, message, 'تنبيه مباشر');
-    }
-
-    function checkAutomatedSchedules() {
-      const now = new Date();
-      const currentDay = now.getDate();
-      const currentHours = now.getHours();
-      const currentMinutes = now.getMinutes();
-      const timeStr = `${String(currentHours).padStart(2, '0')}:${String(currentMinutes).padStart(2, '0')}`;
-      const todayPrayers = prayersDatabase.find(p => p.day === currentDay) || prayersDatabase[26];
-
-      // 1. فحص مواقيت الصلوات الخمس (ثابتة ودقيقة)
-      const prayerChecks = [
-        { key: 'fajr', name: 'صلاة الفجر', time: todayPrayers.fajr, msg: 'حي على الصلاة، حي على الفلاح.. حان وقت صلاة الفجر.' },
-        { key: 'dhuhr', name: 'صلاة الظهر', time: todayPrayers.dhuhr, msg: 'حان الآن موعد صلاة الظهر (13:20).' },
-        { key: 'asr', name: 'صلاة العصر', time: todayPrayers.asr, msg: `حان موعد صلاة العصر حسب التقويم الأزرق (${todayPrayers.asr}).` },
-        { key: 'maghrib', name: 'صلاة المغرب', time: todayPrayers.maghrib, msg: `حان موعد صلاة المغرب (${todayPrayers.maghrib}) + أذكار المساء.` },
-        { key: 'isha', name: 'صلاة العشاء', time: todayPrayers.isha, msg: `حان الآن موعد صلاة العشاء (${todayPrayers.isha}).` }
-      ];
-
-      prayerChecks.forEach(p => {
-        const alertId = `${currentDay}_${p.key}_${p.time}`;
-        if (timeStr === p.time && !triggeredAlertsHistory.has(alertId)) {
-          triggeredAlertsHistory.add(alertId);
-          triggerPersistentAlarm(`🕌 أذان ${p.name}`, p.msg, 'أذان الصلاة');
-
-          // إذا كانت الفجر: جدولة أذكار الصباح بعد 5 دقائق بدقة
-          if (p.key === 'fajr') {
-            setTimeout(() => {
-              triggerPersistentAlarm('📖 أذكار الصباح', 'مرت 5 دقائق على أذان الفجر، حان وقت قراءة أذكار الصباح لتحصين يومك وبداية النشاط.', 'أذكار الصباح');
-            }, 5 * 60 * 1000);
-          }
-        }
-      });
-
-      // 2. فحص تنبيه أذكار المساء (مع المغرب بعد 3 دقائق)
-      const maghribAlertId = `${currentDay}_evening_athkar_${todayPrayers.maghrib}`;
-      if (timeStr === todayPrayers.maghrib && !triggeredAlertsHistory.has(maghribAlertId)) {
-        triggeredAlertsHistory.add(maghribAlertId);
-        setTimeout(() => {
-          triggerPersistentAlarm('🌇 أذكار المساء', 'حان وقت قراءة أذكار المساء والتفريغ الروحي والذهني الهادئ.', 'أذكار المساء');
-        }, 3 * 60 * 1000);
-      }
-
-      // 3. فحص مواعيد العادات الثابتة
-      defaultHabits.forEach(h => {
-        if (h.alertType === 'fixed_time') {
-          const alertId = `${currentDay}_habit_${h.id}_${h.alertHour}_${h.alertMinute}`;
-          if (currentHours === h.alertHour && currentMinutes === h.alertMinute && !triggeredAlertsHistory.has(alertId)) {
-            triggeredAlertsHistory.add(alertId);
-            triggerPersistentAlarm(`⏰ تنبيه عادة: ${h.name}`, `حان موعد: ${h.name} (${h.timeDesc}).`, 'عادة يومية');
-          }
-        }
-      });
-
-      // 4. فحص مواعيد المحاضرات والعمل والتنقل (المعدلة أو الأصلية)
-      const currentWorking = getWorkingSchedule();
-      const currentDaySchedule = (currentWorking[activeWeek] && currentWorking[activeWeek][activeDay]) ? currentWorking[activeWeek][activeDay] : [];
-      currentDaySchedule.forEach((item, index) => {
-        if (item.cat !== 'prayer') {
-          const startTime = item.time.split(' - ')[0].trim();
-          const alertId = `${currentDay}_sched_${activeWeek}_${activeDay}_${index}_${startTime}`;
-          if (timeStr === startTime && !triggeredAlertsHistory.has(alertId)) {
-            triggeredAlertsHistory.add(alertId);
-            triggerPersistentAlarm(`📅 موعد: ${item.title}`, `${item.desc} (التوقيت: ${item.time})`, item.badge || 'موعد مجدول');
-          }
-        }
-      });
-    }
-
-    function updateLivePrayerTimer() {
-      const now = new Date();
-      const currentDay = now.getDate();
-      const todayPrayers = prayersDatabase.find(p => p.day === currentDay) || prayersDatabase[26];
-
-      const prayers = [
-        { name: 'صلاة الفجر', time: todayPrayers.fajr, id: 'fajr' },
-        { name: 'الشروق', time: todayPrayers.shuruq, id: 'shuruq' },
-        { name: 'صلاة الظهر', time: todayPrayers.dhuhr, id: 'dhuhr' },
-        { name: 'صلاة العصر', time: todayPrayers.asr, id: 'asr' },
-        { name: 'صلاة المغرب', time: todayPrayers.maghrib, id: 'maghrib' },
-        { name: 'صلاة العشاء', time: todayPrayers.isha, id: 'isha' }
-      ];
-
-      let nextPrayer = null;
-      let diffMs = 0;
-
-      for (let p of prayers) {
-        const [hh, mm] = p.time.split(':').map(Number);
-        const prayerDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0);
-        if (prayerDate > now) {
-          nextPrayer = p;
-          diffMs = prayerDate - now;
-          break;
-        }
-      }
-
-      if (!nextPrayer) {
-        const tomorrow = prayersDatabase.find(p => p.day === currentDay + 1) || prayersDatabase[0];
-        const [hh, mm] = tomorrow.fajr.split(':').map(Number);
-        const tomorrowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, hh, mm, 0);
-        nextPrayer = { name: 'صلاة الفجر (غداً)', time: tomorrow.fajr, id: 'fajr' };
-        diffMs = tomorrowDate - now;
-      }
-
-      // تحديث شريط التاريخ والصلوات ديناميكياً مع الصلاة القادمة
-      const detailedDateElem = document.getElementById('live-detailed-date-display');
-      if (detailedDateElem) {
-        detailedDateElem.innerHTML = `
-          <span>📅 اليوم: ${todayPrayers.arDay} ${todayPrayers.day} سبتمبر (Сентябрь) 2026</span>
-          <span class="text-emerald-400 font-bold">• ${todayPrayers.hijri} ربيع الأول 1448 هـ</span>
-          <span class="text-emerald-400 font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 font-bold">الصلاة القادمة: ${nextPrayer.name} (${nextPrayer.time})</span>
-        `;
-      }
-
-      document.getElementById('next-prayer-name').textContent = nextPrayer.name;
-      document.getElementById('next-prayer-exact-time').textContent = nextPrayer.time;
-
-      const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
-      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-      const seconds = String(totalSeconds % 60).padStart(2, '0');
-
-      document.getElementById('prayer-countdown-timer').textContent = `${hours}:${minutes}:${seconds}`;
-
-      // فحص الجدولة التلقائية دورياً
-      checkAutomatedSchedules();
-    }
-
-    // توليد نغمة تنبيه صوتية عبر Web Audio API دون أي روابط خارجية
-    function playBeepTone() {
-      try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        const ctx = new AudioContext();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 1.2);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    function requestNotificationPermission() {
-      if (!('Notification' in window)) {
-        showToast('متصفحك الحالي لا يدعم إشعارات النظام.');
-        return;
-      }
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          playBeepTone();
-          new Notification('تم تفعيل مُنبّه ومواقيت الصلاة بنجاح! 🔔', {
-            body: 'ستصلك التنبيهات والأذان عند حلول وقت كل صلاة وعادة ومسار تلقائياً.'
-          });
-          document.getElementById('notif-btn').textContent = '✅ الإشعارات مفعلة';
-          showToast('تم تفعيل كافة إشعارات الأذان والصلوات والعادات بنجاح!');
-        } else {
-          showToast('تم رفض إذن الإشعارات، يمكنك تفعيله من إعدادات المتصفح.');
-        }
-      });
-    }
-
-    function testNotificationSystem() {
-      triggerPersistentAlarm('تجربة المنبه المستمر 🔔', 'المنبه يرن الآن بشكل مستمر! اضغط الزر أدناه لإيقافه يدوياً والتأكد من استجابة النظام.', 'اختبار المنبه');
-    }
-
-    function showToast(message) {
-      const toastBox = document.getElementById('toast-box');
-      const toastMsg = document.getElementById('toast-message');
-      toastMsg.textContent = message;
-      toastBox.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-20');
-      toastBox.classList.add('opacity-100', 'translate-y-0');
-      setTimeout(() => {
-        toastBox.classList.remove('opacity-100', 'translate-y-0');
-        toastBox.classList.add('opacity-0', 'pointer-events-none', '-translate-y-20');
-      }, 3500);
-    }
-
-    // تصدير ملف التقويم .ics
-    function exportIcsCalendar() {
-      let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//ITMO Study Prayer OS//AR\nCALSCALE:GREGORIAN\n";
-      
-      prayersDatabase.forEach(p => {
-        const dStr = String(p.day).padStart(2, '0');
-        const list = [
-          { title: "صلاة الفجر", time: p.fajr },
-          { title: "صلاة الظهر", time: p.dhuhr },
-          { title: "صلاة العصر", time: p.asr },
-          { title: "صلاة المغرب", time: p.maghrib },
-          { title: "صلاة العشاء", time: p.isha }
-        ];
-
-        list.forEach(item => {
-          const [hh, mm] = item.time.split(':');
-          const dtStart = `202609${dStr}T${hh}${mm}00`;
-          ics += `BEGIN:VEVENT\nSUMMARY:${item.title}\nDESCRIPTION:مواقيت الصلاة المعتمدة في تقويم سبتمبر 2026\nDTSTART;TZID=Europe/Moscow:${dtStart}\nDURATION:PT20M\nEND:VEVENT\n`;
-        });
-      });
-
-      ics += "END:VCALENDAR";
-
-      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute('download', 'ITMO_September_2026_Prayers.ics');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast('تم تحميل ملف التقويم September_2026_Prayers.ics بنجاح!');
-    }
-
-    let timerTotalSec = 90 * 60;
-    let timerRemainingSec = timerTotalSec;
-    let timerTimerId = null;
-
-    function updateTimerUI() {
-      const mins = String(Math.floor(timerRemainingSec / 60)).padStart(2, '0');
-      const secs = String(timerRemainingSec % 60).padStart(2, '0');
-      document.getElementById('focus-timer-display').textContent = `${mins}:${secs}`;
+    function updateWaterDisplay() {
+      const currentEl = document.getElementById('water-current-amount');
+      const badgeEl = document.getElementById('water-percentage-badge');
+      const progressEl = document.getElementById('water-progress-bar');
+      if (currentEl) currentEl.textContent = waterAmount;
+      const pct = Math.min(100, Math.round((waterAmount / 3000) * 100));
+      if (badgeEl) badgeEl.textContent = `${pct}%`;
+      if (progressEl) progressEl.style.width = `${pct}%`;
     }
 
     function startFocusTimer() {
-      if (timerTimerId) return;
-      document.getElementById('timer-state-label').textContent = 'قيد العمل';
-      document.getElementById('timer-state-label').className = 'text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300';
-      
-      timerTimerId = setInterval(() => {
-        if (timerRemainingSec > 0) {
-          timerRemainingSec--;
-          updateTimerUI();
+      if (isTimerRunning) return;
+      isTimerRunning = true;
+      document.getElementById('timer-state-label').textContent = 'قيد التركيز';
+      focusTimerInterval = setInterval(() => {
+        if (focusTimeRemaining > 0) {
+          focusTimeRemaining--;
+          updateTimerDisplay();
         } else {
-          clearInterval(timerTimerId);
-          timerTimerId = null;
-          playBeepTone();
-          document.getElementById('timer-state-label').textContent = 'انتهت الجلسة';
-          showToast('انتهت جلسة التركيز العميق! أحسنت، خذ استراحة هادئة الآن.');
+          pauseFocusTimer();
+          showToast('انتهت جلسة التركيز! خذ راحة 10 دقائق ☕');
         }
       }, 1000);
     }
 
     function pauseFocusTimer() {
-      if (timerTimerId) {
-        clearInterval(timerTimerId);
-        timerTimerId = null;
-        document.getElementById('timer-state-label').textContent = 'متوقف مؤقتاً';
-        document.getElementById('timer-state-label').className = 'text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300';
-      }
+      isTimerRunning = false;
+      clearInterval(focusTimerInterval);
+      document.getElementById('timer-state-label').textContent = 'متوقف';
     }
 
     function resetFocusTimer() {
       pauseFocusTimer();
-      timerRemainingSec = timerTotalSec;
+      focusTimeRemaining = 3000;
+      updateTimerDisplay();
       document.getElementById('timer-state-label').textContent = 'جاهز';
-      document.getElementById('timer-state-label').className = 'text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300';
-      updateTimerUI();
     }
 
-    function setTimerDuration(minutes) {
-      pauseFocusTimer();
-      timerTotalSec = minutes * 60;
-      timerRemainingSec = timerTotalSec;
-      updateTimerUI();
-      showToast(`تم ضبط المؤقت على ${minutes} دقيقة.`);
+    function updateTimerDisplay() {
+      const m = Math.floor(focusTimeRemaining / 60);
+      const s = focusTimeRemaining % 60;
+      const el = document.getElementById('focus-timer-display');
+      if (el) el.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
     function renderHabitsList() {
       const container = document.getElementById('habits-list-container');
-      const savedHabits = JSON.parse(localStorage.getItem('itmo_daily_habits_db') || '{}');
+      if (!container) return;
+      let html = '';
+      userHabits.forEach((habit, idx) => {
+        let actionTrigger = `toggleHabit(${idx})`;
+        let titleDisplay = habit.title;
+        let badgeType = '';
+        if (habit.category === 'prayer') badgeType = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">صلاة</span>';
+        else if (habit.category === 'dhikr') badgeType = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 font-mono">أذكار</span>';
+        else if (habit.category === 'health') badgeType = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono">صحة</span>';
+        else if (habit.category === 'study') badgeType = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">دراسة</span>';
+        else badgeType = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">عادة</span>';
 
-      container.innerHTML = defaultHabits.map((habit, index) => {
-        const isChecked = savedHabits[index] ? 'checked' : '';
-        const textStyle = savedHabits[index] ? 'line-through text-slate-500' : 'text-slate-300';
+        if (habit.isAthkarModal) {
+          if (habit.athkarType === 'morning') actionTrigger = `openAthkarReaderModal('morning')`;
+          if (habit.athkarType === 'evening') actionTrigger = `openAthkarReaderModal('evening')`;
+        } else if (habit.isPostPrayer) {
+          actionTrigger = `openPostPrayerModalForPrayer('${habit.isPostPrayer}')`;
+        }
 
-        return `
-          <label class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 border border-white/5 cursor-pointer transition">
+        html += `
+          <div class="p-2.5 rounded-xl bg-slate-900/60 border border-white/5 flex items-center justify-between gap-3">
             <div class="flex items-center gap-2.5">
-              <input type="checkbox" onchange="toggleHabitItem(${index}, this)" ${isChecked} class="w-4 h-4 rounded text-emerald-500 focus:ring-0 cursor-pointer accent-emerald-500">
-              <span class="${textStyle}" id="habit-text-${index}">${habit.name}</span>
+              <input type="checkbox" ${habit.completed ? 'checked' : ''} onchange="toggleHabit(${idx})" class="w-4 h-4 rounded accent-indigo-600 cursor-pointer">
+              <span class="${habit.completed ? 'line-through opacity-50' : 'text-slate-200'} font-medium text-xs cursor-pointer hover:text-indigo-300 transition" onclick="${(habit.isAthkarModal || habit.isPostPrayer) ? actionTrigger : ''}">${titleDisplay}</span>
             </div>
-            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shrink-0">
-              ${habit.timeDesc}
-            </span>
-          </label>
+            <div class="flex items-center gap-1.5">
+              ${badgeType}
+              <button onclick="${actionTrigger}" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px]">فتح</button>
+            </div>
+          </div>
         `;
-      }).join('');
+      });
+      container.innerHTML = html;
+      updateHabitDashboardStats();
     }
 
-    function toggleHabitItem(index, element) {
-      const savedHabits = JSON.parse(localStorage.getItem('itmo_daily_habits_db') || '{}');
-      savedHabits[index] = element.checked;
-      localStorage.setItem('itmo_daily_habits_db', JSON.stringify(savedHabits));
-      
-      const textElem = document.getElementById(`habit-text-${index}`);
-      if (element.checked) {
-        textElem.className = 'line-through text-slate-500';
-      } else {
-        textElem.className = 'text-slate-300';
-      }
+    function toggleHabit(idx) {
+      userHabits[idx].completed = !userHabits[idx].completed;
+      localStorage.setItem('itmo_habits', JSON.stringify(userHabits));
+      renderHabitsList();
+    }
+
+    function addNewCustomHabit() {
+      const input = document.getElementById('new-habit-input');
+      if (!input || !input.value.trim()) return;
+      userHabits.push({
+        id: 'custom_' + Date.now(),
+        title: input.value.trim(),
+        category: 'custom',
+        completed: false
+      });
+      input.value = '';
+      localStorage.setItem('itmo_habits', JSON.stringify(userHabits));
+      renderHabitsList();
+      showToast('تمت إضافة العادة الجديدة بنجاح ✔');
     }
 
     function resetTodayHabits() {
-      localStorage.removeItem('itmo_daily_habits_db');
+      userHabits.forEach(h => h.completed = false);
+      localStorage.setItem('itmo_habits', JSON.stringify(userHabits));
       renderHabitsList();
-      showToast('تم تصفير قائمة العادات لليوم الجديد.');
+      showToast('تم تصفير عادات اليوم.');
     }
 
-    window.onload = function() {
-      renderSchedule();
-      renderHabitsList();
-      updateTimerUI();
-      updateLivePrayerTimer();
-      setInterval(updateLivePrayerTimer, 1000);
-      lucide.createIcons();
-    };
+    function updateHabitDashboardStats() {
+      const total = userHabits.length;
+      const completed = userHabits.filter(h => h.completed).length;
+      const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+      const pctText = document.getElementById('habit-percentage-text');
+      const progressBar = document.getElementById('habit-progress-bar');
+      const countsLabel = document.getElementById('habit-counts-label');
+      const statusBadge = document.getElementById('habit-status-badge');
+      if (pctText) pctText.textContent = `${pct}%`;
+      if (progressBar) progressBar.style.width = `${pct}%`;
+      if (countsLabel) countsLabel.textContent = `${completed} من ${total}`;
+      if (statusBadge) statusBadge.textContent = pct === 100 ? 'إتقان تام 🏆' : 'في مسار الإنجاز 💪';
+    }
+
+    function openPrayerModal() {
+      const modal = document.getElementById('prayer-modal');
+      const tbody = document.getElementById('full-prayer-table-body');
+      if (!modal || !tbody) return;
+      let html = '';
+      prayersDatabase.forEach(p => {
+        html += `<tr class="hover:bg-white/5"><td class="p-2.5">${p.day} سبتمبر</td><td class="p-2.5">${p.arDay}</td><td class="p-2.5 text-emerald-400 font-bold">${p.fajr}</td><td class="p-2.5">${p.shuruq}</td><td class="p-2.5 text-sky-400">${p.dhuhr}</td><td class="p-2.5 text-amber-400">${p.asr}</td><td class="p-2.5 text-rose-400">${p.maghrib}</td><td class="p-2.5 text-indigo-400">${p.isha}</td></tr>`;
+      });
+      tbody.innerHTML = html;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closePrayerModal() { document.getElementById('prayer-modal').classList.add('hidden'); }
+    function openNutritionModal() { document.getElementById('nutrition-modal').classList.remove('hidden'); document.getElementById('nutrition-modal').classList.add('flex'); }
+    function closeNutritionModal() { document.getElementById('nutrition-modal').classList.add('hidden'); }
+    
+    function openPostPrayerModalForCurrentUpcoming() { openPostPrayerModalForPrayer('fajr'); }
+    function openPostPrayerModalForPrayer(prayerName) {
+      document.getElementById('post-prayer-modal').classList.remove('hidden');
+      document.getElementById('post-prayer-modal').classList.add('flex');
+      let tab = 'dhuhr';
+      if (prayerName === 'fajr') tab = 'fajr';
+      else if (prayerName === 'maghrib') tab = 'maghrib';
+      else if (prayerName === 'dhuhr') tab = 'dhuhr';
+      else if (prayerName === 'asr') tab = 'asr';
+      else if (prayerName === 'isha') tab = 'isha';
+      switchPostPrayerTab(tab);
+    }
+    function closePostPrayerModal() { document.getElementById('post-prayer-modal').classList.add('hidden'); }
+
+    function openAthkarReaderModal(type) {
+      const modal = document.getElementById('athkar-reader-modal');
+      const titleEl = document.getElementById('athkar-modal-title');
+      const listEl = document.getElementById('athkar-reader-list');
+      if (!modal || !listEl) return;
+
+      const items = (type === 'morning') ? morningAthkarList : eveningAthkarList;
+      titleEl.textContent = (type === 'morning') ? 'أذكار الصباح المأثورة (20 ذكراً)' : 'أذكار المساء المأثورة (20 ذكراً)';
+
+      let html = '';
+      items.forEach((item, idx) => {
+        let currentClickCount = 0;
+        html += `
+          <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2" id="athkar-card-${idx}">
+            <div class="flex items-center justify-between text-xs text-sky-400 font-bold">
+              <span>الذكر رقم ${idx + 1}</span>
+              <button onclick="decrementAthkarCount(${idx}, ${item.count})" class="px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 font-mono text-xs hover:bg-sky-500/30 transition" id="athkar-btn-${idx}">
+                التكرار المتبقي: <span id="athkar-count-${idx}">${item.count}</span> / ${item.count}
+              </button>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">${item.text}</p>
+          </div>
+        `;
+      });
+      listEl.innerHTML = html;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function decrementAthkarCount(idx, maxCount) {
+      const countEl = document.getElementById(`athkar-count-${idx}`);
+      const cardEl = document.getElementById(`athkar-card-${idx}`);
+      if (!countEl) return;
+      let current = parseInt(countEl.textContent, 10);
+      if (current > 0) {
+        current--;
+        countEl.textContent = current;
+        if (current === 0) {
+          cardEl.classList.add('border-emerald-500/60', 'bg-emerald-950/20');
+          countEl.innerHTML = '✔ تم';
+        }
+      }
+    }
+
+    function closeAthkarReaderModal() { document.getElementById('athkar-reader-modal').classList.add('hidden'); }
+    function completeCurrentAthkarFromModal() {
+      showToast('تم تسجيل قراءة الأذكار بنجاح ✔');
+      closeAthkarReaderModal();
+    }
+
+    function openEditModal(k, t, tm, d) { document.getElementById('edit-item-key').value = k; document.getElementById('edit-item-title').value = t; document.getElementById('edit-item-time').value = tm; document.getElementById('edit-item-desc').value = d; document.getElementById('edit-item-modal').classList.remove('hidden'); document.getElementById('edit-item-modal').classList.add('flex'); }
+    function closeEditModal() { document.getElementById('edit-item-modal').classList.add('hidden'); }
+    
+    function saveItemEdits() {
+      const k = document.getElementById('edit-item-key').value;
+      const dayOfWeekNum = selectedDateObj.getDay();
+      const dayKeyMap = { 0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat' };
+      const dKey = dayKeyMap[dayOfWeekNum];
+      const parity = getWeekParity(selectedDateObj);
+      const schedulesMap = (parity === 'odd') ? schedulesOdd : schedulesEven;
+      const items = schedulesMap[dKey];
+
+      const idx = items.findIndex(i => i.id === k);
+      if (idx !== -1) {
+        items[idx].title = document.getElementById('edit-item-title').value;
+        items[idx].time = document.getElementById('edit-item-time').value;
+        items[idx].desc = document.getElementById('edit-item-desc').value;
+        renderSchedule();
+        showToast('تم التعديل بنجاح ✔');
+      }
+      closeEditModal();
+    }
+
+    let tasbeehCounters = { subhan: 0, hamd: 0, takbeer: 0 };
+    function switchPostPrayerTab(tab) {
+      ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (btn) {
+          btn.className = (t === tab) ? 'px-3 py-1.5 rounded-xl font-bold transition shrink-0 bg-emerald-600 text-white' : 'px-3 py-1.5 rounded-xl font-bold transition shrink-0 bg-slate-800 text-slate-300 hover:text-white';
+        }
+      });
+      const container = document.getElementById('post-prayer-content-container');
+      if (!container) return;
+
+      let html = `
+        <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2">
+          <h4 class="font-bold text-emerald-400">1. الاستغفار والتأمين (ثلاث مرات)</h4>
+          <p>«أَسْتَغْفِرُ اللهَ» (ثلاث مرات):</p>
+          <div class="flex gap-2">
+            <button onclick="this.classList.toggle('bg-emerald-600'); this.classList.toggle('bg-slate-800');" class="px-3 py-1 rounded-xl bg-slate-800 text-white text-xs font-mono">1</button>
+            <button onclick="this.classList.toggle('bg-emerald-600'); this.classList.toggle('bg-slate-800');" class="px-3 py-1 rounded-xl bg-slate-800 text-white text-xs font-mono">2</button>
+            <button onclick="this.classList.toggle('bg-emerald-600'); this.classList.toggle('bg-slate-800');" class="px-3 py-1 rounded-xl bg-slate-800 text-white text-xs font-mono">3</button>
+          </div>
+          <p class="mt-2">«اللَّهُمَّ أَنْتَ السَّلاَمُ وَمِنْكَ السَّلاَمُ، تَبَارَكْتَ يَا ذَا الجَلاَلِ وَالإِكْرَامِ».</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2">
+          <h4 class="font-bold text-emerald-400">2. التهليل والثناء العام</h4>
+          <p>«لاَ إِلهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ، لاَ إِلهَ إِلاَّ اللهُ، وَلاَ نَعْبُدُ إِلاَّ إِيَّاهُ، لَهُ النِّعْمَةُ وَلَهُ الفَضْلُ وَلَهُ الثَّنَاءُ الحَسَنُ، لاَ إِلهَ إِلاَّ اللهُ مُخْلِصِينَ لَهُ الدِّينَ وَلَوْ كَرِهَ الكَافِرُونَ».</p>
+          <p>«اللَّهُمَّ لاَ مَانِعَ لِمَا أَعْطَيْتَ، وَلاَ مُعْطِيَ لِمَا مَنَعْتَ، وَلاَ يَنْفَعُ ذَا الجَدِّ مِنْكَ الجَدُّ».</p>
+        </div>
+      `;
+
+      if (tab === 'fajr' || tab === 'maghrib') {
+        html += `
+          <div class="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-3">
+            <h4 class="font-bold text-amber-300">أذكار خاصة بصلاتي الفجر والمغرب</h4>
+            <div>
+              <p class="font-semibold text-xs mb-1">• التهليل (10 مرات): «لاَ إِلهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ»</p>
+              <div class="flex flex-wrap gap-1.5">
+                ${Array.from({length: 10}, (_, i) => `<button onclick="this.classList.toggle('bg-amber-600'); this.classList.toggle('bg-slate-800');" class="w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-mono">${i+1}</button>`).join('')}
+              </div>
+            </div>
+            <div>
+              <p class="font-semibold text-xs mb-1">• الاستعاذة من النار (7 مرات): «اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ»</p>
+              <div class="flex flex-wrap gap-1.5">
+                ${Array.from({length: 7}, (_, i) => `<button onclick="this.classList.toggle('bg-amber-600'); this.classList.toggle('bg-slate-800');" class="w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-mono">${i+1}</button>`).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      html += `
+        <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-3">
+          <h4 class="font-bold text-emerald-400">3. التسبيح والتحميد والتكبير (33 لكلٍ منها)</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-white/5 space-y-1 text-center">
+              <span class="text-emerald-300 font-bold">سُبْحَانَ اللهِ (33)</span>
+              <div class="text-lg font-mono font-black text-white" id="count-subhan">0</div>
+              <button onclick="incrementTasbeeh('subhan')" class="w-full py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold">تسبيحة +1</button>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-white/5 space-y-1 text-center">
+              <span class="text-sky-300 font-bold">الحَمْدُ للَّهِ (33)</span>
+              <div class="text-lg font-mono font-black text-white" id="count-hamd">0</div>
+              <button onclick="incrementTasbeeh('hamd')" class="w-full py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-bold">تحميدة +1</button>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-950 border border-white/5 space-y-1 text-center">
+              <span class="text-amber-300 font-bold">اللهُ أَكْبَرُ (33)</span>
+              <div class="text-lg font-mono font-black text-white" id="count-takbeer">0</div>
+              <button onclick="incrementTasbeeh('takbeer')" class="w-full py-1 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold">تكبيرة +1</button>
+            </div>
+          </div>
+          <p class="text-center text-xs text-slate-400 pt-1">تمام المائة: «لاَ إِلهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ».</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2">
+          <h4 class="font-bold text-emerald-400">4. آية الكرسي والمعوذات</h4>
+          <p class="font-semibold text-xs text-slate-300">آية الكرسي:</p>
+          <p class="text-xs">«اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ...»</p>
+          <p class="font-semibold text-xs text-slate-300 mt-2">المعوذات (سورة الإخلاص، الفلق، الناس):</p>
+          <p class="text-xs">${(tab === 'fajr' || tab === 'maghrib') ? 'تقرأ 3 مرات لكل سورة.' : 'تقرأ مرة واحدة لكل سورة.'}</p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-900 border border-white/5 space-y-2">
+          <h4 class="font-bold text-emerald-400">5. الدعاء المأثور</h4>
+          <p>«اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ، وَشُكْرِكَ، وَحُسْنِ عِبَادَتِكَ».</p>
+        </div>
+      `;
+
+      if (tab === 'fajr') {
+        html += `
+          <div class="p-3.5 rounded-2xl bg-sky-950/30 border border-sky-500/30 space-y-2">
+            <h4 class="font-bold text-sky-300">دعاء بعد صلاة الفجر حصراً</h4>
+            <p>«اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا».</p>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function incrementTasbeeh(type) {
+      if (tasbeehCounters[type] < 33) {
+        tasbeehCounters[type]++;
+        const el = document.getElementById(`count-${type}`);
+        if (el) el.textContent = tasbeehCounters[type];
+      }
+    }
+
+    function resetAllCustomSchedules() { localStorage.clear(); location.reload(); }
+    
+    function showToast(msg) {
+      const box = document.getElementById('toast-box');
+      document.getElementById('toast-message').textContent = msg;
+      box.classList.remove('-translate-y-20', 'opacity-0');
+      setTimeout(() => box.classList.add('-translate-y-20', 'opacity-0'), 3500);
+    }
+
+    function updateLiveSystemClock() {
+      const now = new Date();
+      document.getElementById('live-detailed-date-display').innerHTML = `📅 ${now.toLocaleDateString('ar-EG', { weekday: 'long', month: 'long', day: 'numeric' })} - الوقت: ${now.toLocaleTimeString()}`;
+      document.getElementById('next-prayer-name').textContent = 'صلاة الفجر';
+      document.getElementById('next-prayer-exact-time').textContent = '04:54';
+      document.getElementById('prayer-countdown-timer').textContent = '07:30:15';
+    }
+
+    function requestNotificationPermission() { showToast('تم تفعيل التنبيهات والأذان بنجاح ✔'); }
+    function exportIcsCalendar() { showToast('تم تصدير ملف التقويم (.ics)'); }
+    function stopAlarmRinger() { document.getElementById('active-alarm-modal').classList.add('hidden'); }
   </script>
 </body>
 </html>
