@@ -45,7 +45,6 @@
     </div>
   </div>
 
-  <!-- Post-Prayer Modal -->
   <div id="post-prayer-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[95] hidden items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-emerald-500/40 bg-slate-950 shadow-2xl space-y-5 text-right">
       <div class="flex items-center justify-between border-b border-white/10 pb-4">
@@ -79,7 +78,6 @@
     </div>
   </div>
 
-  <!-- Athkar Reader Modal -->
   <div id="athkar-reader-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[96] hidden items-center justify-center p-4">
     <div class="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-sky-500/40 bg-slate-950 shadow-2xl space-y-5 text-right">
       <div class="flex items-center justify-between border-b border-white/10 pb-4">
@@ -111,7 +109,6 @@
     </div>
   </div>
 
-  <!-- Nutrition Modal -->
   <div id="nutrition-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[90] hidden items-center justify-center p-4">
     <div class="glass-card max-w-3xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 rounded-3xl border border-sky-500/30 bg-slate-950 shadow-2xl space-y-5 text-right">
       <div class="flex items-center justify-between border-b border-white/10 pb-4">
@@ -147,7 +144,6 @@
     </div>
   </div>
 
-  <!-- Full Prayer Table Modal -->
   <div id="prayer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-3 sm:p-6">
     <div class="glass-card w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col border border-white/10 shadow-2xl overflow-hidden bg-slate-900">
       <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
@@ -200,7 +196,6 @@
       </div>
     </header>
 
-    <!-- Dhikr Banner -->
     <div class="glass-card rounded-2xl p-4 sm:p-5 border border-indigo-500/30 bg-gradient-to-r from-indigo-950/30 via-slate-900/60 to-purple-950/30 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <span class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300"><i data-lucide="heart" class="w-5 h-5 fill-current"></i></span>
@@ -214,7 +209,6 @@
       </button>
     </div>
 
-    <!-- Live Prayer Countdown Banner -->
     <div class="glass-card rounded-2xl p-4 sm:p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/20 via-slate-900/60 to-sky-950/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div class="flex items-center gap-3.5">
         <div class="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 shrink-0"><i data-lucide="clock" class="w-6 h-6"></i></div>
@@ -384,16 +378,22 @@
       { day: 11, month: 9, fajr: "05:30", shuruq: "07:31", dhuhr: "13:18", asr: "15:21", maghrib: "18:04", isha: "20:02" }
     ];
 
-    let selectedDateObj = new Date(2026, 8, 27); // Default Sept 27, 2026
-    let currentMonth = 8;
-    let currentYear = 2026;
+    // Initialize to real current date automatically (Sept 28, 2026)
+    let realNow = new Date();
+    let selectedDateObj = new Date(realNow.getFullYear(), realNow.getMonth(), realNow.getDate());
+    if (selectedDateObj.getFullYear() < 2026 || selectedDateObj.getMonth() < 8) {
+      selectedDateObj = new Date(2026, 8, 28); // Default fallback to Sept 28, 2026
+    }
+    let currentMonth = selectedDateObj.getMonth();
+    let currentYear = selectedDateObj.getFullYear();
+
     let waterAmount = parseInt(localStorage.getItem('itmo_water') || '0', 10);
     let focusTimeRemaining = 3000;
     let focusTimerInterval = null;
     let isTimerRunning = false;
     let cancelledLectures = JSON.parse(localStorage.getItem('itmo_cancelled_lectures') || '{}');
 
-    // Week Parity Rule: Sept 28 - Oct 4 is Even (زوجي), Oct 5 - Oct 11 is Odd (فردي)
+    // Official Week Parity Rule: Sept 28 - Oct 4 is Even (زوجي), Oct 5 - Oct 11 is Odd (فردي)
     function getWeekParity(dateObj) {
       const d = dateObj.getDate();
       const m = dateObj.getMonth();
@@ -406,14 +406,14 @@
       return (weekNum % 2 === 0) ? 'even' : 'odd';
     }
 
-    // Official Even Week Schedule (Четная неделя) - Sept 28 - Oct 4
+    // Official Even Week Schedule (Четная неделя)
     const schedulesEven = {
       mon: [
         { id: 'me_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر وقراءة أذكار الصباح.' },
-        { id: 'me_2', time: '10:45 - 11:15', title: 'التحرك المبكر لمؤتمر/محاضرة (مترو سانت بطرسبرغ 🚇)', type: 'travel', desc: 'الخروج قبل المحاضرة بـ 45 دقيقة للوصول في الموعد.' },
+        { id: 'me_2', time: '10:45 - 11:15', title: 'التحرك المبكر للمحاضرة عبر المترو 🚇', type: 'travel', desc: 'الخروج قبل المحاضرة بـ 45 دقيقة للوصول في الموعد.' },
         { id: 'me_3', time: '11:30 - 13:00', title: 'Дискретная математика — Лекция', type: 'study', desc: 'رياضيات متقطعة (عن بُعد).' },
-        { id: 'me_4', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء.' },
-        { id: 'me_5', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
+        { id: 'me_4', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء وتغذية الدماغ.' },
+        { id: 'me_5', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر في وقتها.' },
         { id: 'me_6', time: '18:44 - 19:10', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'أداء المغرب وأذكار المساء.' },
         { id: 'me_7', time: '20:26 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
       ],
@@ -446,7 +446,7 @@
         { id: 'the_2', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'صلاة الظهر.' },
         { id: 'the_3', time: '15:47 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
         { id: 'the_4', time: '18:44 - 19:10', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'the_5', time: '20:30 - 21:30', title: 'طبخ مجمّع (Batch Cooking) للوجبات 🍲', type: 'work', desc: 'تجهيز وجبات الأسبوع.' },
+        { id: 'the_5', time: '20:30 - 21:30', title: 'طبخ مجمّع (Batch Cooking) للوجبات 🍲', type: 'work', desc: 'تجهيز وجبات الأسبوع واقتصادياً.' },
         { id: 'the_6', time: '20:26 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات.' }
       ],
       fri: [
@@ -458,7 +458,7 @@
         { id: 'fre_6', time: '15:00 - 17:00', title: 'Русский язык (Разговорный) — Практика', type: 'study', desc: 'ممارسة اللغة الروسية المحادثة.' },
         { id: 'fre_7', time: '15:45 - 16:15', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'صلاة العصر.' },
         { id: 'fre_8', time: '18:32 - 19:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
-        { id: 'fre_9', time: '20:15 - 20:45', title: 'التحرك المبكر إلى المبنى الأول للممارسة المسائية', type: 'travel', desc: 'التحرك للمحاضرة المسائية.' },
+        { id: 'fre_9', time: '20:00 - 20:30', title: 'التحرك المبكر إلى المبنى الأول للممارسة المسائية', type: 'travel', desc: 'التحرك للمحاضرة المسائية.' },
         { id: 'fre_10', time: '20:30 - 22:00', title: 'Введение в профессиональную деятельность — Практика', type: 'study', desc: 'المبنى الأول: Песочная наб., д. 14, قاعة 306.' },
         { id: 'fre_11', time: '20:20 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام اليوم.' }
       ],
@@ -485,7 +485,7 @@
       ]
     };
 
-    // Official Odd Week Schedule (Нечетная неделя) - Oct 5 - Oct 11
+    // Official Odd Week Schedule (Нечетная неделя)
     const schedulesOdd = {
       mon: [
         { id: 'mo_1', time: '04:00 - 04:30', title: 'صلاة الفجر المكتوبة + أذكار الصباح 🌅', type: 'prayer', desc: 'أداء الفجر وقراءة أذكار الصباح.' },
@@ -494,8 +494,8 @@
         { id: 'mo_4', time: '13:20 - 14:00', title: 'صلاة الظهر + الوجبة الأولى 🍽️', type: 'prayer', desc: 'استراحة وتناول الغداء.' },
         { id: 'mo_5', time: '14:45 - 15:15', title: 'التحرك المبكر إلى المبنى الثاني (ул. Ломоносова, д. 9)', type: 'travel', desc: 'التحرك لمبنى لومونوسوف للقاعة 1314.' },
         { id: 'mo_6', time: '15:30 - 17:00', title: 'Дискретная математика — Практика', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова, д. 9, قاعة 1314.' },
-        { id: 'mo_7', time: '15:33 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
-        { id: 'mo_8', time: '17:10 - 18:40', title: 'Дискретная математика — Практика (تابع)', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова, д. 9, قاعة 1314.' },
+        { id: 'mo_7', time: '17:10 - 18:40', title: 'Дискретная математика — Практика (تابع)', type: 'study', desc: 'المبنى الثاني: ул. Ломоносова, д. 9, قاعة 1314.' },
+        { id: 'mo_8', time: '15:33 - 16:05', title: 'صلاة العصر المكتوبة', type: 'prayer', desc: 'أداء صلاة العصر.' },
         { id: 'mo_9', time: '18:22 - 19:00', title: 'صلاة المغرب + أذكار المساء 🌇', type: 'prayer', desc: 'المغرب وأذكار المساء.' },
         { id: 'mo_10', time: '20:14 - 21:00', title: 'صلاة العشاء + أذكار دبر الصلاة 📿', type: 'prayer', desc: 'ختام الصلوات الخمس.' }
       ],
@@ -1167,3 +1167,20 @@
   </script>
 </body>
 </html>
+```
+eof
+
+---
+
+### لرفع هذا التحديث الفوري إلى GitHub:
+
+افتح التيرمينال ونفّذ الأوامر البسيطة التالية:
+
+```bash
+cd ~/Documents/itmo-system
+git add index.html
+git commit -m "Auto-select current real date (Sept 28, 2026) on load and sync schedule"
+git push
+```
+
+بمجرد اكتمال الرفع، حدد المتصفح على هاتفك وسترى أن التطبيق فتح تلقائياً على **يوم 28 سبتمبر 2026** مع جدوله الصحيح والأذكار والعدّادات المباشرة!
