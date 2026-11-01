@@ -151,7 +151,7 @@
   <div id="prayer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-3 sm:p-6">
     <div class="glass-card w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col border border-white/10 shadow-2xl overflow-hidden bg-slate-900">
       <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
-        <h3 class="font-bold text-base text-white">مواقيت الصلاة لشهر أكتوبر 2026 (سانت بطرسبرغ)</h3>
+        <h3 class="font-bold text-base text-white">مواقيت الصلاة لشهر نوفمبر 2026 (سانت بطرسبرغ)</h3>
         <button onclick="closePrayerModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div class="overflow-auto custom-scroll flex-1 p-3 sm:p-5">
@@ -264,7 +264,7 @@
           <div class="flex items-center justify-between pb-3 border-b border-white/10">
             <div class="flex items-center gap-2">
               <i data-lucide="calendar" class="w-5 h-5 text-indigo-400"></i>
-              <h3 class="font-bold text-sm text-white" id="monthly-calendar-title">أكتوبر 2026</h3>
+              <h3 class="font-bold text-sm text-white" id="monthly-calendar-title">نوفمبر 2026</h3>
             </div>
             <div class="flex gap-1">
               <button onclick="changeMonth(-1)" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
@@ -366,6 +366,7 @@
 
   <script>
     const prayersDatabase = [
+      // مواقيت شهر أكتوبر 2026 (شهر 10 -> month index 9)
       { day: 1, month: 9, fajr: "05:04", shuruq: "07:05", dhuhr: "13:20", asr: "15:41", maghrib: "18:35", isha: "20:28" },
       { day: 2, month: 9, fajr: "05:06", shuruq: "07:07", dhuhr: "13:20", asr: "15:40", maghrib: "18:32", isha: "20:26" },
       { day: 3, month: 9, fajr: "05:08", shuruq: "07:09", dhuhr: "13:20", asr: "15:38", maghrib: "18:29", isha: "20:23" },
@@ -396,14 +397,46 @@
       { day: 28, month: 9, fajr: "06:11", shuruq: "08:10", dhuhr: "13:20", asr: "14:59", maghrib: "17:17", isha: "19:15" },
       { day: 29, month: 9, fajr: "06:13", shuruq: "08:13", dhuhr: "13:20", asr: "14:58", maghrib: "17:14", isha: "19:12" },
       { day: 30, month: 9, fajr: "06:15", shuruq: "08:15", dhuhr: "13:20", asr: "14:56", maghrib: "17:11", isha: "19:09" },
-      { day: 31, month: 9, fajr: "06:18", shuruq: "08:18", dhuhr: "13:20", asr: "14:55", maghrib: "17:09", isha: "19:07" }
+      { day: 31, month: 9, fajr: "06:18", shuruq: "08:18", dhuhr: "13:20", asr: "14:55", maghrib: "17:09", isha: "19:07" },
+
+      // مواقيت شهر نوفمبر 2026 (شهر 11 -> month index 10): كل الصلوات من الجدول الأبيض + صلاة العصر من الجدول الأزرق
+      { day: 1, month: 10, fajr: "06:21", shuruq: "08:21", dhuhr: "13:20", asr: "14:54", maghrib: "17:06", isha: "19:04" },
+      { day: 2, month: 10, fajr: "06:23", shuruq: "08:23", dhuhr: "13:20", asr: "14:52", maghrib: "17:04", isha: "19:01" },
+      { day: 3, month: 10, fajr: "06:26", shuruq: "08:25", dhuhr: "13:20", asr: "14:50", maghrib: "17:01", isha: "18:59" },
+      { day: 4, month: 10, fajr: "06:28", shuruq: "08:28", dhuhr: "13:20", asr: "14:49", maghrib: "16:58", isha: "18:56" },
+      { day: 5, month: 10, fajr: "06:31", shuruq: "08:31", dhuhr: "13:20", asr: "14:48", maghrib: "16:56", isha: "18:54" },
+      { day: 6, month: 10, fajr: "06:33", shuruq: "08:33", dhuhr: "13:20", asr: "14:47", maghrib: "16:54", isha: "18:51" },
+      { day: 7, month: 10, fajr: "06:36", shuruq: "08:36", dhuhr: "13:20", asr: "14:45", maghrib: "16:51", isha: "18:49" },
+      { day: 8, month: 10, fajr: "06:38", shuruq: "08:38", dhuhr: "13:20", asr: "14:44", maghrib: "16:48", isha: "18:46" },
+      { day: 9, month: 10, fajr: "06:41", shuruq: "08:41", dhuhr: "13:20", asr: "14:43", maghrib: "16:46", isha: "18:43" },
+      { day: 10, month: 10, fajr: "06:43", shuruq: "08:44", dhuhr: "13:20", asr: "14:42", maghrib: "16:44", isha: "18:41" },
+      { day: 11, month: 10, fajr: "06:46", shuruq: "08:46", dhuhr: "13:20", asr: "14:41", maghrib: "16:42", isha: "18:39" },
+      { day: 12, month: 10, fajr: "06:49", shuruq: "08:49", dhuhr: "13:20", asr: "14:40", maghrib: "16:39", isha: "18:37" },
+      { day: 13, month: 10, fajr: "06:51", shuruq: "08:51", dhuhr: "13:20", asr: "14:39", maghrib: "16:37", isha: "18:35" },
+      { day: 14, month: 10, fajr: "06:54", shuruq: "08:54", dhuhr: "13:20", asr: "14:38", maghrib: "16:35", isha: "18:32" },
+      { day: 15, month: 10, fajr: "06:57", shuruq: "08:56", dhuhr: "13:20", asr: "14:37", maghrib: "16:33", isha: "18:30" },
+      { day: 16, month: 10, fajr: "06:59", shuruq: "08:59", dhuhr: "13:20", asr: "14:36", maghrib: "16:31", isha: "18:28" },
+      { day: 17, month: 10, fajr: "07:01", shuruq: "09:01", dhuhr: "13:20", asr: "14:35", maghrib: "16:29", isha: "18:26" },
+      { day: 18, month: 10, fajr: "07:04", shuruq: "09:04", dhuhr: "13:20", asr: "14:34", maghrib: "16:26", isha: "18:24" },
+      { day: 19, month: 10, fajr: "07:06", shuruq: "09:06", dhuhr: "13:20", asr: "14:34", maghrib: "16:24", isha: "18:22" },
+      { day: 20, month: 10, fajr: "07:08", shuruq: "09:08", dhuhr: "13:20", asr: "14:33", maghrib: "16:23", isha: "18:20" },
+      { day: 21, month: 10, fajr: "07:11", shuruq: "09:11", dhuhr: "13:20", asr: "14:32", maghrib: "16:21", isha: "18:18" },
+      { day: 22, month: 10, fajr: "07:13", shuruq: "09:13", dhuhr: "13:20", asr: "14:32", maghrib: "16:19", isha: "18:17" },
+      { day: 23, month: 10, fajr: "07:15", shuruq: "09:16", dhuhr: "13:20", asr: "14:31", maghrib: "16:17", isha: "18:15" },
+      { day: 24, month: 10, fajr: "07:18", shuruq: "09:18", dhuhr: "13:20", asr: "14:31", maghrib: "16:16", isha: "18:13" },
+      { day: 25, month: 10, fajr: "07:20", shuruq: "09:20", dhuhr: "13:20", asr: "14:30", maghrib: "16:14", isha: "18:11" },
+      { day: 26, month: 10, fajr: "07:23", shuruq: "09:22", dhuhr: "13:20", asr: "14:29", maghrib: "16:12", isha: "18:09" },
+      { day: 27, month: 10, fajr: "07:25", shuruq: "09:25", dhuhr: "13:20", asr: "14:28", maghrib: "16:11", isha: "18:08" },
+      { day: 28, month: 10, fajr: "07:27", shuruq: "09:27", dhuhr: "13:20", asr: "14:28", maghrib: "16:09", isha: "18:06" },
+      { day: 29, month: 10, fajr: "07:29", shuruq: "09:29", dhuhr: "13:20", asr: "14:27", maghrib: "16:08", isha: "18:05" },
+      { day: 30, month: 10, fajr: "07:31", shuruq: "09:31", dhuhr: "13:20", asr: "14:27", maghrib: "16:06", isha: "18:03" }
     ];
 
-    // Initialize to real current date automatically (Today: Oct 4, 2026)
+    // Initialize to real current date automatically
     let realNow = new Date();
     let selectedDateObj = new Date(realNow.getFullYear(), realNow.getMonth(), realNow.getDate());
     if (selectedDateObj.getFullYear() < 2026 || selectedDateObj.getMonth() < 9) {
-      selectedDateObj = new Date(2026, 9, 4); // Default fallback to Oct 4, 2026
+      selectedDateObj = new Date(2026, 10, 1); // Default fallback to Nov 1, 2026
     }
     let currentMonth = selectedDateObj.getMonth();
     let currentYear = selectedDateObj.getFullYear();
@@ -953,8 +986,9 @@
       const tbody = document.getElementById('full-prayer-table-body');
       if (!modal || !tbody) return;
       let html = '';
-      prayersDatabase.forEach(p => {
-        html += `<tr class="hover:bg-white/5"><td class="p-2.5">${p.day} أكتوبر</td><td class="p-2.5 text-emerald-400 font-bold">${p.fajr}</td><td class="p-2.5">${p.shuruq}</td><td class="p-2.5 text-sky-400">${p.dhuhr}</td><td class="p-2.5 text-amber-400">${p.asr}</td><td class="p-2.5 text-rose-400">${p.maghrib}</td><td class="p-2.5 text-indigo-400">${p.isha}</td></tr>`;
+      const novPrayers = prayersDatabase.filter(p => p.month === 10);
+      novPrayers.forEach(p => {
+        html += `<tr class="hover:bg-white/5"><td class="p-2.5">${p.day} نوفمبر</td><td class="p-2.5 text-emerald-400 font-bold">${p.fajr}</td><td class="p-2.5">${p.shuruq}</td><td class="p-2.5 text-sky-400">${p.dhuhr}</td><td class="p-2.5 text-amber-400">${p.asr}</td><td class="p-2.5 text-rose-400">${p.maghrib}</td><td class="p-2.5 text-indigo-400">${p.isha}</td></tr>`;
       });
       tbody.innerHTML = html;
       modal.classList.remove('hidden');
@@ -1141,7 +1175,7 @@
       document.getElementById('live-detailed-date-display').innerHTML = `📅 ${now.toLocaleDateString('ar-EG', { weekday: 'long', month: 'long', day: 'numeric' })} - الوقت: ${now.toLocaleTimeString()}`;
 
       let todayPrayerData = prayersDatabase.find(p => p.day === currentDayNum && p.month === currentMonthNum);
-      if (!todayPrayerData) todayPrayerData = prayersDatabase[3]; // Fallback to Oct 4
+      if (!todayPrayerData) todayPrayerData = prayersDatabase.find(p => p.day === 1 && p.month === 10); // Fallback to Nov 1
 
       const timeToMinutes = (tStr) => {
         const [h, m] = tStr.split(':').map(Number);
